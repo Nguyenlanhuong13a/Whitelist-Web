@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useUser } from '../contexts/UserContext';
 
 function RegistrationForm() {
+  const { user } = useUser();
   const [formData, setFormData] = useState({
     discord: '',
     steam: '',
@@ -13,6 +15,16 @@ function RegistrationForm() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Auto-populate Discord ID when user is connected
+  useEffect(() => {
+    if (user?.discordId && !formData.discord) {
+      setFormData(prev => ({
+        ...prev,
+        discord: user.discordId
+      }));
+    }
+  }, [user, formData.discord]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -215,11 +227,22 @@ function RegistrationForm() {
                 type="text"
                 id="discord"
                 name="discord"
-                placeholder="Ví dụ: username#1234"
+                placeholder={user?.discordId ? "Đã tự động điền từ tài khoản Discord" : "Ví dụ: username#1234"}
                 value={formData.discord}
                 onChange={handleChange}
-                className={`input-field pl-12 h-14 ${errors.discord ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'focus:border-primary-500'}`}
+                className={`input-field pl-12 h-14 ${errors.discord ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : user?.discordId ? 'border-green-500 focus:border-green-500' : 'focus:border-primary-500'}`}
+                readOnly={!!user?.discordId}
               />
+              {user?.discordId && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="flex items-center space-x-1 text-green-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-xs font-medium">Tự động</span>
+                  </div>
+                </div>
+              )}
             </div>
             {errors.discord && (
               <p className="mt-2 text-sm text-red-400 flex items-center space-x-1">

@@ -10,6 +10,7 @@ dotenv.config();
 // Import routes
 const applicationRoutes = require('./routes/applications');
 const discordRoutes = require('./routes/discord');
+const authRoutes = require('./routes/auth');
 
 // Import Discord bot
 const discordBot = require('./services/discordBot');
@@ -33,6 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/applications', applicationRoutes);
 app.use('/api/discord', discordRoutes);
+app.use('/api/auth', authRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

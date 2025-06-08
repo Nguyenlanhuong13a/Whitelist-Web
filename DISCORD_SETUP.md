@@ -63,19 +63,40 @@ Your bot needs the following permissions:
 3. Click "Copy ID" to get the role ID
 4. This will be your `DISCORD_MODERATOR_ROLE_ID`
 
-## Step 8: Environment Variables
+## Step 8: Configure OAuth2 for Settings Page
+
+1. In your Discord application, go to the "OAuth2" section
+2. Under "Redirects", add: `http://localhost:3000/auth/discord/callback`
+3. For production, also add your production URL: `https://yourdomain.com/auth/discord/callback`
+4. Under "OAuth2 URL Generator":
+   - Select scopes: `identify` and `email`
+   - Copy the Client ID and Client Secret
+
+## Step 9: Environment Variables
 
 Add these to your `.env` file:
 
 ```env
+# Discord Bot Configuration
 DISCORD_BOT_TOKEN=your_bot_token_here
 DISCORD_WEBHOOK_CHANNEL_ID=your_channel_id_here
 DISCORD_MODERATOR_ROLE_ID=your_moderator_role_id_here
+
+# Discord OAuth Configuration (for Settings page)
+DISCORD_CLIENT_ID=your_discord_client_id_here
+DISCORD_CLIENT_SECRET=your_discord_client_secret_here
+DISCORD_REDIRECT_URI=http://localhost:3000/auth/discord/callback
+```
+
+Add these to your `client/.env` file:
+
+```env
+REACT_APP_DISCORD_CLIENT_ID=your_discord_client_id_here
 ```
 
 **Important:** Only users with the specified moderator role will be able to approve or reject applications using the Discord buttons.
 
-## Step 9: Test the Bot
+## Step 10: Test the Bot
 
 1. Run the setup test: `npm run test-setup`
 2. Start the server: `npm run dev`

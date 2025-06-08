@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useUser } from '../contexts/UserContext';
 import './ApplicationHistory.css';
 
 const ApplicationHistory = () => {
+  const { user } = useUser();
   const [identifier, setIdentifier] = useState('');
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -10,6 +12,19 @@ const ApplicationHistory = () => {
   const [summary, setSummary] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState('');
+  const [hasAutoSearched, setHasAutoSearched] = useState(false);
+
+  // Auto-populate search field and perform search when user is connected
+  useEffect(() => {
+    if (user?.discordId && !identifier && !hasAutoSearched) {
+      setIdentifier(user.discordId);
+      setHasAutoSearched(true);
+      // Automatically search after a short delay
+      setTimeout(() => {
+        fetchApplicationHistory(1, '');
+      }, 500);
+    }
+  }, [user, identifier, hasAutoSearched]);
 
   const fetchApplicationHistory = async (page = 1, status = '') => {
     if (!identifier.trim()) {
@@ -155,10 +170,18 @@ const ApplicationHistory = () => {
                 type="text"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="Nhập Discord ID hoặc Steam ID của bạn..."
-                className="search-input"
+                placeholder={user?.discordId ? "Đã tự động điền Discord ID từ tài khoản đã kết nối" : "Nhập Discord ID hoặc Steam ID của bạn..."}
+                className={`search-input ${user?.discordId && identifier === user.discordId ? 'auto-filled' : ''}`}
                 disabled={loading}
               />
+              {user?.discordId && identifier === user.discordId && (
+                <div className="auto-fill-indicator">
+                  <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-xs text-green-400 font-medium">Tự động</span>
+                </div>
+              )}
             </div>
             <button type="submit" className="search-button" disabled={loading || !identifier.trim()}>
               <span className="button-content">
