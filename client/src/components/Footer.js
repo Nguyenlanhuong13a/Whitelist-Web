@@ -103,7 +103,7 @@ function Footer() {
                 <span className="text-sm font-bold text-white">F</span>
               </div>
               <p className="text-gray-400">
-                &copy; {new Date().getFullYear()} <span className="font-semibold text-gray-300">FiveM Server</span>. Đã đăng ký bản quyền.
+                &copy; 2025 <span className="font-semibold text-gray-300">FiveM Server</span>. Đã đăng ký bản quyền.
               </p>
             </div>
             <div className="flex items-center space-x-4 text-sm text-gray-500">
