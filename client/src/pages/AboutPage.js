@@ -243,7 +243,7 @@ function AboutPage() {
           {/* Author Attribution */}
           <div className="text-center py-8 animate-slide-up" style={{animationDelay: '0.4s'}}>
             <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm">
-              <span>Made with</span>
+              <span>Made with Bâu</span>
               <svg className="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
