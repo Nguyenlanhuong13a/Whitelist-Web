@@ -82,10 +82,10 @@ function StatusChecker() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <h2 className="text-2xl font-display font-bold text-white">Kiểm tra trạng thái đơn đăng ký</h2>
+        <h2 className="text-xl sm:text-2xl font-display font-bold text-white break-words vietnamese-text">Kiểm tra trạng thái đơn đăng ký</h2>
       </div>
 
-      <p className="text-gray-300 mb-8 leading-relaxed">
+      <p className="text-gray-300 mb-8 leading-relaxed break-words vietnamese-text">
         Nhập Discord ID của bạn để kiểm tra trạng thái đơn đăng ký whitelist.
       </p>
 
@@ -94,7 +94,7 @@ function StatusChecker() {
           <label htmlFor="discordSearch" className="block text-sm font-medium text-gray-200">
             Discord ID:
           </label>
-          <div className="flex space-x-4">
+          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <div className="flex-1 relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 {/* AWS-style User Icon */}
@@ -111,7 +111,7 @@ function StatusChecker() {
                 className="input-field pl-10"
               />
             </div>
-            <button type="submit" className="btn-primary px-8 group">
+            <button type="submit" className="btn-primary px-6 sm:px-8 w-full sm:w-auto group">
               {/* AWS-style Search Icon */}
               <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -155,7 +155,7 @@ function StatusChecker() {
             <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 className="text-xl font-display font-semibold text-white">Kết quả tìm kiếm</h3>
+            <h3 className="text-lg sm:text-xl font-display font-semibold text-white break-words">Kết quả tìm kiếm</h3>
           </div>
 
           <div className="card">
@@ -169,7 +169,7 @@ function StatusChecker() {
             </div>
 
             <div className="card-body space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     {/* AWS-style User Icon */}
@@ -178,7 +178,7 @@ function StatusChecker() {
                     </svg>
                     <span className="text-sm font-medium text-gray-400">Discord ID</span>
                   </div>
-                  <span className="text-white font-mono">{searchResult.discordId}</span>
+                  <span className="text-white font-mono break-all">{searchResult.discordId}</span>
                 </div>
 
                 <div className="space-y-2">
@@ -213,9 +213,9 @@ function StatusChecker() {
                     <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <div>
-                      <h4 className="text-red-400 font-medium mb-1">Phản hồi từ Admin</h4>
-                      <p className="text-red-200">{searchResult.feedback}</p>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-red-400 font-medium mb-1 break-words">Phản hồi từ Admin</h4>
+                      <p className="text-red-200 break-words whitespace-pre-wrap vietnamese-text">{searchResult.feedback}</p>
                     </div>
                   </div>
                 </div>
@@ -246,7 +246,7 @@ function StatusChecker() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="text-gray-400 italic">
+            <p className="text-gray-400 italic break-words">
               Nhập Discord ID của bạn và nhấn "Kiểm tra" để xem trạng thái đơn đăng ký.
             </p>
           </div>
