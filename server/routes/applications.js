@@ -1,0 +1,238 @@
+const express = require('express');
+const { body, validationResult } = require('express-validator');
+const Application = require('../models/Application');
+const discordService = require('../services/discordService');
+
+const router = express.Router();
+
+// Validation middleware
+const validateApplication = [
+  body('discord')
+    .notEmpty()
+    .withMessage('Discord ID là bắt buộc')
+    .isLength({ min: 2, max: 50 })
+    .withMessage('Discord ID phải có từ 2-50 ký tự'),
+  
+  body('steam')
+    .notEmpty()
+    .withMessage('Steam ID là bắt buộc')
+    .isLength({ min: 5, max: 100 })
+    .withMessage('Steam ID không hợp lệ'),
+  
+  body('name')
+    .notEmpty()
+    .withMessage('Tên nhân vật là bắt buộc')
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Tên nhân vật phải có từ 2-100 ký tự'),
+  
+  body('birthDate')
+    .isISO8601()
+    .withMessage('Ngày sinh không hợp lệ')
+    .custom((value) => {
+      const today = new Date();
+      const birthDate = new Date(value);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      
+      if (age < 16) {
+        throw new Error('Bạn phải từ 16 tuổi trở lên');
+      }
+      
+      return true;
+    }),
+  
+  body('backstory')
+    .notEmpty()
+    .withMessage('Tiểu sử nhân vật là bắt buộc')
+    .isLength({ min: 100, max: 2000 })
+    .withMessage('Tiểu sử phải có từ 100-2000 ký tự'),
+  
+  body('reason')
+    .notEmpty()
+    .withMessage('Lý do tham gia là bắt buộc')
+    .isLength({ min: 10, max: 1000 })
+    .withMessage('Lý do phải có từ 10-1000 ký tự')
+];
+
+// POST /api/applications - Submit new application
+router.post('/', validateApplication, async (req, res) => {
+  try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: errors.array()
+      });
+    }
+
+    const { discord, steam, name, birthDate, backstory, reason } = req.body;
+
+    // Check if user already has a pending or approved application
+    const existingApplication = await Application.findOne({
+      discordId: discord,
+      status: { $in: ['pending', 'approved'] }
+    });
+
+    if (existingApplication) {
+      return res.status(409).json({
+        error: 'Application already exists',
+        message: existingApplication.status === 'approved' 
+          ? 'Bạn đã được duyệt whitelist'
+          : 'Bạn đã có đơn đăng ký đang chờ xem xét'
+      });
+    }
+
+    // Create new application
+    const application = new Application({
+      discordId: discord,
+      steamId: steam,
+      characterName: name,
+      birthDate: new Date(birthDate),
+      backstory,
+      reason,
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+
+    // Save to database
+    await application.save();
+
+    // Send Discord notification
+    try {
+      const discordMessage = await discordService.sendApplicationNotification(application);
+      
+      // Update application with Discord message info
+      if (discordMessage) {
+        application.discordMessageId = discordMessage.id;
+        application.discordChannelId = discordMessage.channel.id;
+        await application.save();
+      }
+    } catch (discordError) {
+      console.error('Discord notification failed:', discordError);
+      // Don't fail the application submission if Discord fails
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Đơn đăng ký đã được gửi thành công',
+      application: application.toPublicJSON()
+    });
+
+  } catch (error) {
+    console.error('Application submission error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Có lỗi xảy ra khi gửi đơn đăng ký'
+    });
+  }
+});
+
+// GET /api/applications/status/:discordId - Check application status
+router.get('/status/:discordId', async (req, res) => {
+  try {
+    const { discordId } = req.params;
+
+    if (!discordId) {
+      return res.status(400).json({
+        error: 'Discord ID is required'
+      });
+    }
+
+    const application = await Application.findByDiscordId(discordId);
+
+    if (!application) {
+      return res.status(404).json({
+        error: 'Application not found',
+        message: 'Không tìm thấy đơn đăng ký với Discord ID này'
+      });
+    }
+
+    res.json({
+      success: true,
+      application: application.toPublicJSON()
+    });
+
+  } catch (error) {
+    console.error('Status check error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Có lỗi xảy ra khi kiểm tra trạng thái'
+    });
+  }
+});
+
+// GET /api/applications/stats - Get application statistics (admin only)
+router.get('/stats', async (req, res) => {
+  try {
+    const stats = await Application.getApplicationStats();
+    const total = await Application.countDocuments();
+
+    const formattedStats = {
+      total,
+      pending: 0,
+      approved: 0,
+      rejected: 0
+    };
+
+    stats.forEach(stat => {
+      formattedStats[stat._id] = stat.count;
+    });
+
+    res.json({
+      success: true,
+      stats: formattedStats
+    });
+
+  } catch (error) {
+    console.error('Stats error:', error);
+    res.status(500).json({
+      error: 'Internal server error'
+    });
+  }
+});
+
+// GET /api/applications - Get all applications (admin only, with pagination)
+router.get('/', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const status = req.query.status;
+    const skip = (page - 1) * limit;
+
+    const query = {};
+    if (status && ['pending', 'approved', 'rejected'].includes(status)) {
+      query.status = status;
+    }
+
+    const applications = await Application.find(query)
+      .sort({ submittedAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Application.countDocuments(query);
+
+    res.json({
+      success: true,
+      applications: applications.map(app => app.toPublicJSON()),
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+
+  } catch (error) {
+    console.error('Applications list error:', error);
+    res.status(500).json({
+      error: 'Internal server error'
+    });
+  }
+});
+
+module.exports = router;
