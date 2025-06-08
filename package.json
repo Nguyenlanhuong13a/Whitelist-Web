@@ -9,7 +9,10 @@
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "install-all": "npm install && npm install --prefix client",
-    "test-setup": "node server/test-setup.js"
+    "test-setup": "node server/test-setup.js",
+    "build": "cd client && npm install && npm run build",
+    "postbuild": "npm install --only=production",
+    "heroku-postbuild": "npm run build"
   },
   "keywords": [
     "fivem",
@@ -18,6 +21,10 @@
   ],
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "concurrently": "^8.2.0",
