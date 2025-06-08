@@ -79,7 +79,7 @@ class DiscordBot {
           if (!interaction.replied && !interaction.deferred) {
             await interaction.reply({
               content: '❌ Có lỗi xảy ra khi xử lý yêu cầu của bạn.',
-              ephemeral: true
+              flags: 64 // Ephemeral flag
             });
           }
         } catch (replyError) {
@@ -226,7 +226,17 @@ class DiscordBot {
     if (!['approve', 'reject'].includes(action) || !applicationId) {
       await interaction.reply({
         content: '❌ Hành động không hợp lệ.',
-        ephemeral: true
+        flags: 64 // Ephemeral flag
+      });
+      return;
+    }
+
+    // Check if user has the required moderator role
+    const hasPermission = await this.checkModeratorPermission(interaction);
+    if (!hasPermission) {
+      await interaction.reply({
+        content: '❌ Bạn không có quyền thực hiện hành động này. Chỉ có moderator mới có thể duyệt hoặc từ chối đơn đăng ký.',
+        flags: 64 // Ephemeral flag
       });
       return;
     }
@@ -241,7 +251,7 @@ class DiscordBot {
       if (!application) {
         await interaction.reply({
           content: '❌ Không tìm thấy đơn đăng ký.',
-          ephemeral: true
+          flags: 64 // Ephemeral flag
         });
         return;
       }
@@ -250,7 +260,7 @@ class DiscordBot {
       if (application.status !== 'pending') {
         await interaction.reply({
           content: `❌ Đơn đăng ký này đã được ${application.status === 'approved' ? 'duyệt' : 'từ chối'}.`,
-          ephemeral: true
+          flags: 64 // Ephemeral flag
         });
         return;
       }
@@ -282,7 +292,7 @@ class DiscordBot {
       // Respond to the interaction
       await interaction.reply({
         content: statusMessage,
-        ephemeral: true
+        flags: 64 // Ephemeral flag
       });
 
       console.log(`✅ Application ${applicationId} ${action}ed by ${reviewer.username}`);
@@ -291,8 +301,48 @@ class DiscordBot {
       console.error('Button interaction error:', error);
       await interaction.reply({
         content: '❌ Có lỗi xảy ra khi xử lý yêu cầu của bạn.',
-        ephemeral: true
+        flags: 64 // Ephemeral flag
       });
+    }
+  }
+
+  async checkModeratorPermission(interaction) {
+    try {
+      // Get the required moderator role ID from environment variables
+      const moderatorRoleId = process.env.DISCORD_MODERATOR_ROLE_ID;
+
+      if (!moderatorRoleId) {
+        console.warn('⚠️ DISCORD_MODERATOR_ROLE_ID not configured - allowing all users');
+        return true; // Allow if not configured (for backward compatibility)
+      }
+
+      // Check if the interaction is from a guild (server)
+      if (!interaction.guild) {
+        console.warn('⚠️ Button interaction not from a guild - denying permission');
+        return false;
+      }
+
+      // Get the member who clicked the button
+      const member = interaction.member;
+      if (!member) {
+        console.warn('⚠️ Could not get member information - denying permission');
+        return false;
+      }
+
+      // Check if the member has the required role
+      const hasRole = member.roles.cache.has(moderatorRoleId);
+
+      if (hasRole) {
+        console.log(`✅ User ${interaction.user.username} has moderator role - permission granted`);
+      } else {
+        console.log(`❌ User ${interaction.user.username} does not have moderator role - permission denied`);
+      }
+
+      return hasRole;
+
+    } catch (error) {
+      console.error('Error checking moderator permission:', error);
+      return false; // Deny permission on error for security
     }
   }
 

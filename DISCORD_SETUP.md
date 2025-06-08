@@ -56,16 +56,26 @@ Your bot needs the following permissions:
 3. Click "Copy ID"
 4. This is your `DISCORD_WEBHOOK_CHANNEL_ID`
 
-## Step 7: Environment Variables
+## Step 7: Configure Moderator Role
+
+1. Create or identify the Discord role that should have permission to approve/reject applications
+2. Right-click on the role in your server settings
+3. Click "Copy ID" to get the role ID
+4. This will be your `DISCORD_MODERATOR_ROLE_ID`
+
+## Step 8: Environment Variables
 
 Add these to your `.env` file:
 
 ```env
 DISCORD_BOT_TOKEN=your_bot_token_here
 DISCORD_WEBHOOK_CHANNEL_ID=your_channel_id_here
+DISCORD_MODERATOR_ROLE_ID=your_moderator_role_id_here
 ```
 
-## Step 8: Test the Bot
+**Important:** Only users with the specified moderator role will be able to approve or reject applications using the Discord buttons.
+
+## Step 9: Test the Bot
 
 1. Run the setup test: `npm run test-setup`
 2. Start the server: `npm run dev`
@@ -93,6 +103,12 @@ DISCORD_WEBHOOK_CHANNEL_ID=your_channel_id_here
 - Ensure the bot has "Use Slash Commands" permission
 - Check if the interaction endpoint URL is configured (if using HTTP interactions)
 - Verify the bot can edit its own messages
+
+### Permission Denied for Button Interactions
+- Verify the user clicking the button has the moderator role specified in `DISCORD_MODERATOR_ROLE_ID`
+- Check if the role ID is correct (right-click role → Copy ID)
+- Ensure the role is assigned to the users who should have permission
+- Check server console logs for permission check details
 
 ## Security Notes
 
