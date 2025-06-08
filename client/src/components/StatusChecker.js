@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useUser } from '../contexts/UserContext';
 
 function StatusChecker() {
+  const { user } = useUser();
   const [discordId, setDiscordId] = useState('');
   const [searchResult, setSearchResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Auto-populate Discord ID when user is connected
+  useEffect(() => {
+    if (user?.discordId && !discordId) {
+      setDiscordId(user.discordId);
+    }
+  }, [user, discordId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -122,9 +131,20 @@ function StatusChecker() {
                 id="discordSearch"
                 value={discordId}
                 onChange={(e) => setDiscordId(e.target.value)}
-                placeholder="Nhập Discord ID của bạn"
-                className="input-field pl-10 text-wrap-anywhere h-14 text-base"
+                placeholder={user?.discordId ? "Đã tự động điền từ tài khoản Discord đã kết nối" : "Nhập Discord ID của bạn"}
+                className={`input-field pl-10 text-wrap-anywhere h-14 text-base ${user?.discordId && discordId === user.discordId ? 'border-green-500 focus:border-green-500 bg-green-500/10' : 'focus:border-primary-500'}`}
+                readOnly={!!user?.discordId}
               />
+              {user?.discordId && discordId === user.discordId && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="flex items-center space-x-1 text-green-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-xs font-medium">Tự động</span>
+                  </div>
+                </div>
+              )}
             </div>
             <button type="submit" className="btn-primary px-6 sm:px-8 w-full sm:w-auto group h-14 text-base">
               {/* AWS-style Search Icon */}
@@ -275,7 +295,10 @@ function StatusChecker() {
               </svg>
             </div>
             <p className="text-gray-400 italic break-words vietnamese-text text-wrap-anywhere leading-relaxed text-lg">
-              Nhập Discord ID của bạn và nhấn "Kiểm tra" để xem trạng thái đơn đăng ký.
+              {user?.discordId
+                ? 'Discord ID đã được tự động điền từ tài khoản đã kết nối. Nhấn "Kiểm tra" để xem trạng thái đơn đăng ký.'
+                : 'Nhập Discord ID của bạn và nhấn "Kiểm tra" để xem trạng thái đơn đăng ký. Hoặc kết nối Discord trong Cài đặt để tự động điền.'
+              }
             </p>
           </div>
         </div>

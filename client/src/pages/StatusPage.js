@@ -22,7 +22,7 @@ function StatusPage() {
 
             <p className="text-lg sm:text-xl text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto break-words vietnamese-text text-wrap-anywhere">
               Sử dụng công cụ bên dưới để kiểm tra trạng thái đơn đăng ký whitelist của bạn.
-              Nhập Discord ID của bạn để xem trạng thái hiện tại.
+              Kết nối Discord trong Cài đặt để tự động điền ID, hoặc nhập thủ công để xem trạng thái hiện tại.
             </p>
 
             <div className="glass rounded-2xl p-6 max-w-2xl mx-auto border border-primary-500/30">
@@ -35,6 +35,7 @@ function StatusPage() {
               </div>
               <p className="text-primary-200 font-medium break-words vietnamese-text text-wrap-anywhere leading-relaxed">
                 Nhập chính xác Discord ID của bạn để kiểm tra trạng thái đơn đăng ký whitelist.
+                Kết nối Discord trong Cài đặt để tự động điền thông tin.
               </p>
             </div>
           </div>
