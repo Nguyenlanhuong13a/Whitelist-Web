@@ -166,6 +166,92 @@ router.get('/status/:discordId', async (req, res) => {
   }
 });
 
+// GET /api/applications/history/:identifier - Get application history by Discord ID or Steam ID
+router.get('/history/:identifier', async (req, res) => {
+  try {
+    const { identifier } = req.params;
+    const { page = 1, limit = 10, status } = req.query;
+
+    if (!identifier) {
+      return res.status(400).json({
+        error: 'Identifier is required',
+        message: 'Discord ID hoặc Steam ID là bắt buộc'
+      });
+    }
+
+    // Build query - search by either Discord ID or Steam ID
+    let query = {
+      $or: [
+        { discordId: identifier },
+        { steamId: identifier }
+      ]
+    };
+
+    // Add status filter if provided
+    if (status && ['pending', 'approved', 'rejected'].includes(status)) {
+      query.status = status;
+    }
+
+    // Calculate pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const limitNum = parseInt(limit);
+
+    // Get applications with pagination
+    const applications = await Application.find(query)
+      .sort({ submittedAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    // Get total count for pagination
+    const totalApplications = await Application.countDocuments(query);
+    const totalPages = Math.ceil(totalApplications / limitNum);
+
+    if (applications.length === 0) {
+      return res.status(404).json({
+        error: 'No applications found',
+        message: 'Không tìm thấy đơn đăng ký nào với thông tin này'
+      });
+    }
+
+    // Format applications for response
+    const formattedApplications = applications.map(app => ({
+      ...app.toPublicJSON(),
+      // Add additional fields for history view
+      submissionDate: app.submittedAt,
+      reviewDate: app.reviewedAt,
+      moderator: app.reviewedBy ? {
+        username: app.reviewedBy.username,
+        discordId: app.reviewedBy.discordId
+      } : null
+    }));
+
+    res.json({
+      success: true,
+      applications: formattedApplications,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        totalApplications,
+        hasNextPage: parseInt(page) < totalPages,
+        hasPrevPage: parseInt(page) > 1,
+        limit: limitNum
+      },
+      summary: {
+        total: totalApplications,
+        pending: applications.filter(app => app.status === 'pending').length,
+        approved: applications.filter(app => app.status === 'approved').length,
+        rejected: applications.filter(app => app.status === 'rejected').length
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching application history:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Có lỗi xảy ra khi tải lịch sử đơn đăng ký'
+    });
+  }
+});
+
 // GET /api/applications/stats - Get application statistics (admin only)
 router.get('/stats', async (req, res) => {
   try {
