@@ -15,12 +15,12 @@ function StatusPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold bg-gradient-to-r from-primary-400 via-secondary-400 to-primary-400 bg-clip-text text-transparent break-words">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold bg-gradient-to-r from-primary-400 via-secondary-400 to-primary-400 bg-clip-text text-transparent break-words vietnamese-text text-wrap-anywhere">
                 Kiểm tra trạng thái
               </h1>
             </div>
 
-            <p className="text-lg sm:text-xl text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto break-words">
+            <p className="text-lg sm:text-xl text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto break-words vietnamese-text text-wrap-anywhere">
               Sử dụng công cụ bên dưới để kiểm tra trạng thái đơn đăng ký whitelist của bạn.
               Nhập Discord ID của bạn để xem trạng thái hiện tại.
             </p>
@@ -31,9 +31,9 @@ function StatusPage() {
                 <svg className="w-6 h-6 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <h3 className="text-lg sm:text-xl font-semibold text-primary-400 break-words">Hướng dẫn sử dụng</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-primary-400 break-words vietnamese-text text-wrap-anywhere">Hướng dẫn sử dụng</h3>
               </div>
-              <p className="text-primary-200 font-medium break-words">
+              <p className="text-primary-200 font-medium break-words vietnamese-text text-wrap-anywhere leading-relaxed">
                 Nhập chính xác Discord ID của bạn để kiểm tra trạng thái đơn đăng ký whitelist.
               </p>
             </div>
@@ -42,7 +42,7 @@ function StatusPage() {
       </div>
 
       {/* Status Checker Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 overflow-visible">
         <StatusChecker />
       </div>
     </div>

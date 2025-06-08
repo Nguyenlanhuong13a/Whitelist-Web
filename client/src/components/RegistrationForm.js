@@ -53,18 +53,53 @@ function RegistrationForm() {
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validate()) {
-      // Gửi dữ liệu đến API
       setIsSubmitting(true);
-      
-      // Giả lập API thành công
-      setTimeout(() => {
+
+      try {
+        const response = await fetch('/api/applications', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            discord: formData.discord,
+            steam: formData.steam,
+            name: formData.name,
+            birthDate: formData.birthDate,
+            backstory: formData.backstory,
+            reason: formData.reason
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setSubmitted(true);
+        } else {
+          // Handle validation errors
+          if (data.details && Array.isArray(data.details)) {
+            const newErrors = {};
+            data.details.forEach(error => {
+              const field = error.path || error.param;
+              if (field) {
+                newErrors[field] = error.msg;
+              }
+            });
+            setErrors(newErrors);
+          } else {
+            setErrors({ general: data.message || 'Có lỗi xảy ra khi gửi đơn đăng ký' });
+          }
+        }
+      } catch (error) {
+        console.error('Submission error:', error);
+        setErrors({ general: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.' });
+      } finally {
         setIsSubmitting(false);
-        setSubmitted(true);
-      }, 1500);
+      }
     }
   };
 
@@ -144,6 +179,20 @@ function RegistrationForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="p-8 space-y-8">
+        {errors.general && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6">
+            <div className="flex items-start space-x-3">
+              <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-red-400 font-medium mb-1">Lỗi</h4>
+                <p className="text-red-200 break-words vietnamese-text text-wrap-anywhere leading-relaxed">{errors.general}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-2">
             <label htmlFor="discord" className="block text-sm font-semibold text-gray-200 mb-3">
