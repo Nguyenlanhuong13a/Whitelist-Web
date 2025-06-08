@@ -119,7 +119,7 @@ function RegistrationForm() {
         </h2>
 
         <p className="text-gray-300 mb-8 max-w-lg mx-auto leading-relaxed">
-          Cảm ơn bạn đã đăng ký whitelist. Chúng tôi sẽ xem xét đơn của bạn và liên hệ thông qua Discord.
+          Cảm ơn bạn đã đăng ký whitelist cho West Roleplay. Chúng tôi sẽ xem xét đơn của bạn và liên hệ thông qua Discord.
           Bạn có thể kiểm tra trạng thái đơn đăng ký của mình ở trang "Trạng thái".
         </p>
 
@@ -389,7 +389,7 @@ function RegistrationForm() {
             id="reason" 
             name="reason" 
             rows="3" 
-            placeholder="Tại sao bạn muốn tham gia máy chủ của chúng tôi?" 
+            placeholder="Tại sao bạn muốn tham gia West Roleplay?"
             value={formData.reason}
             onChange={handleChange}
             className={`input-field ${errors.reason ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'focus:border-primary-500'}`}

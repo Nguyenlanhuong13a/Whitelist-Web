@@ -21,7 +21,7 @@ function RulesPage() {
             </div>
 
             <p className="text-xl text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
-              Dưới đây là bộ quy định chi tiết và đầy đủ của máy chủ. Vui lòng đọc kỹ từng mục
+              Dưới đây là bộ quy định chi tiết và đầy đủ của West Roleplay. Vui lòng đọc kỹ từng mục
               trước khi tham gia để đảm bảo trải nghiệm roleplay tốt nhất cho tất cả mọi người.
             </p>
 

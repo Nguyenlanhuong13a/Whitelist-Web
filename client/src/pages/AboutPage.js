@@ -20,7 +20,7 @@ function AboutPage() {
             </div>
 
             <p className="text-xl text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
-              Tìm hiểu thêm về máy chủ FiveM của chúng tôi và cộng đồng của chúng tôi.
+              Tìm hiểu thêm về West Roleplay và cộng đồng roleplay chuyên nghiệp của chúng tôi.
             </p>
           </div>
         </div>
@@ -43,13 +43,13 @@ function AboutPage() {
 
             <div className="space-y-6 text-gray-300 leading-relaxed">
               <p>
-                Chúng tôi là một cộng đồng FiveM roleplay tập trung vào việc tạo ra trải nghiệm chơi game chân thực và hấp dẫn.
+                West Roleplay là một cộng đồng FiveM roleplay tập trung vào việc tạo ra trải nghiệm chơi game chân thực và hấp dẫn.
                 Máy chủ của chúng tôi được thành lập vào năm 2025 với mục tiêu xây dựng một môi trường thân thiện, sáng tạo và
                 cạnh tranh lành mạnh cho người chơi.
               </p>
               <p>
                 Chúng tôi tự hào về cộng đồng người chơi đa dạng và năng động của mình, với các thành viên đến từ khắp nơi trên thế giới.
-                Điều này tạo nên một trải nghiệm roleplay phong phú với nhiều góc nhìn và phong cách chơi khác nhau.
+                Điều này tạo nên một trải nghiệm roleplay phong phú với nhiều góc nhìn và phong cách chơi khác nhau tại West Roleplay.
               </p>
             </div>
           </div>
@@ -210,7 +210,7 @@ function AboutPage() {
             </div>
 
             <p className="text-gray-300 leading-relaxed mb-8">
-              Nếu bạn muốn tham gia cộng đồng của chúng tôi, vui lòng hoàn thành mẫu đăng ký whitelist và tham gia Discord của chúng tôi.
+              Nếu bạn muốn tham gia West Roleplay, vui lòng hoàn thành mẫu đăng ký whitelist và tham gia Discord của chúng tôi.
               Chúng tôi mong đợi được gặp bạn trong game!
             </p>
 

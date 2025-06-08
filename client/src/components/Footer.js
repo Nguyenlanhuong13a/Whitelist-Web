@@ -99,11 +99,15 @@ function Footer() {
         <div className="border-t border-dark-700/50 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-                <span className="text-sm font-bold text-white">F</span>
+              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center p-1">
+                <img
+                  src="/west-logo.png"
+                  alt="West Roleplay Logo"
+                  className="w-full h-full object-contain rounded"
+                />
               </div>
               <p className="text-gray-400">
-                &copy; 2025 <span className="font-semibold text-gray-300">FiveM Server</span>. Đã đăng ký bản quyền.
+                &copy; 2025 <span className="font-semibold text-gray-300">West Roleplay</span>. Đã đăng ký bản quyền.
               </p>
             </div>
             <div className="flex items-center space-x-4 text-sm text-gray-500">

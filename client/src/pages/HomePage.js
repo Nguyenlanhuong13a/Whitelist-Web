@@ -9,17 +9,18 @@ function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in">
             <div className="inline-flex items-center space-x-4 mb-8">
-              <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-3xl flex items-center justify-center shadow-glow animate-bounce-subtle">
-                {/* AWS-style Gaming Controller Icon */}
-                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M16 14h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-3xl flex items-center justify-center shadow-glow animate-bounce-subtle p-2">
+                <img
+                  src="/west-logo.png"
+                  alt="West Roleplay Logo"
+                  className="w-full h-full object-contain rounded-2xl"
+                />
               </div>
               <div className="text-left">
                 <h1 className="text-5xl md:text-7xl font-display font-bold bg-gradient-to-r from-primary-400 via-secondary-400 to-primary-400 bg-clip-text text-transparent">
-                  FiveM Server
+                  West Roleplay
                 </h1>
-                <p className="text-xl text-gray-400 mt-2">Whitelist Registration System</p>
+                <p className="text-xl text-gray-400 mt-2 font-medium">Whitelist Registration System</p>
               </div>
             </div>
 
@@ -28,8 +29,8 @@ function HomePage() {
                 Chào mừng đến với hệ thống đăng ký <span className="bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent">whitelist</span>
               </h2>
               <p className="text-xl text-gray-300 leading-relaxed mb-8">
-                Cảm ơn bạn đã quan tâm đến máy chủ FiveM của chúng tôi. Để tham gia, vui lòng điền vào mẫu đơn đăng ký bên dưới.
-                Chúng tôi sẽ xem xét đơn của bạn trong thời gian sớm nhất.
+                Cảm ơn bạn đã quan tâm đến West Roleplay. Để tham gia cộng đồng roleplay chuyên nghiệp của chúng tôi,
+                vui lòng điền vào mẫu đơn đăng ký bên dưới. Chúng tôi sẽ xem xét đơn của bạn trong thời gian sớm nhất.
               </p>
 
               <div className="flex flex-wrap justify-center gap-4">
