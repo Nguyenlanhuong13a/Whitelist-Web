@@ -126,81 +126,163 @@ const ApplicationHistory = () => {
 
   return (
     <div className="application-history">
+      {/* Header Section */}
       <div className="history-header">
-        <h2>📋 Lịch Sử Đơn Đăng Ký</h2>
-        <p>Xem tất cả các đơn đăng ký whitelist đã gửi trước đây</p>
+        <div className="header-content">
+          <div className="header-icon">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="header-text">
+            <h1 className="header-title">Lịch Sử Đơn Đăng Ký</h1>
+            <p className="header-subtitle">Xem tất cả các đơn đăng ký whitelist đã gửi trước đây</p>
+          </div>
+        </div>
       </div>
 
-      <form onSubmit={handleSearch} className="search-form">
-        <div className="search-input-group">
-          <input
-            type="text"
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
-            placeholder="Nhập Discord ID hoặc Steam ID của bạn..."
-            className="search-input"
-            disabled={loading}
-          />
-          <button type="submit" className="search-button" disabled={loading || !identifier.trim()}>
-            {loading ? '🔍 Đang tìm...' : '🔍 Tìm kiếm'}
-          </button>
-        </div>
-      </form>
+      {/* Search Section */}
+      <div className="search-section">
+        <form onSubmit={handleSearch} className="search-form">
+          <div className="search-container">
+            <div className="search-input-wrapper">
+              <div className="search-icon">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="Nhập Discord ID hoặc Steam ID của bạn..."
+                className="search-input"
+                disabled={loading}
+              />
+            </div>
+            <button type="submit" className="search-button" disabled={loading || !identifier.trim()}>
+              <span className="button-content">
+                {loading ? (
+                  <>
+                    <div className="loading-spinner"></div>
+                    Đang tìm...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Tìm kiếm
+                  </>
+                )}
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
 
+      {/* Summary Statistics */}
       {summary && (
-        <div className="summary-stats">
-          <div className="stat-item">
-            <span className="stat-number">{summary.total}</span>
-            <span className="stat-label">Tổng đơn</span>
-          </div>
-          <div className="stat-item approved">
-            <span className="stat-number">{summary.approved}</span>
-            <span className="stat-label">Đã duyệt</span>
-          </div>
-          <div className="stat-item rejected">
-            <span className="stat-number">{summary.rejected}</span>
-            <span className="stat-label">Từ chối</span>
-          </div>
-          <div className="stat-item pending">
-            <span className="stat-number">{summary.pending}</span>
-            <span className="stat-label">Đang xem xét</span>
+        <div className="summary-section">
+          <div className="summary-grid">
+            <div className="stat-card total">
+              <div className="stat-icon">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div className="stat-content">
+                <span className="stat-number">{summary.total}</span>
+                <span className="stat-label">Tổng đơn</span>
+              </div>
+            </div>
+            <div className="stat-card approved">
+              <div className="stat-icon">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="stat-content">
+                <span className="stat-number">{summary.approved}</span>
+                <span className="stat-label">Đã duyệt</span>
+              </div>
+            </div>
+            <div className="stat-card rejected">
+              <div className="stat-icon">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="stat-content">
+                <span className="stat-number">{summary.rejected}</span>
+                <span className="stat-label">Từ chối</span>
+              </div>
+            </div>
+            <div className="stat-card pending">
+              <div className="stat-icon">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="stat-content">
+                <span className="stat-number">{summary.pending}</span>
+                <span className="stat-label">Đang xem xét</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
+      {/* Filter Buttons */}
       {applications.length > 0 && (
-        <div className="filter-buttons">
-          <button 
-            className={`filter-btn ${statusFilter === '' ? 'active' : ''}`}
-            onClick={() => handleStatusFilter('')}
-          >
-            Tất cả
-          </button>
-          <button 
-            className={`filter-btn ${statusFilter === 'pending' ? 'active' : ''}`}
-            onClick={() => handleStatusFilter('pending')}
-          >
-            ⏳ Đang xem xét
-          </button>
-          <button 
-            className={`filter-btn ${statusFilter === 'approved' ? 'active' : ''}`}
-            onClick={() => handleStatusFilter('approved')}
-          >
-            ✅ Đã duyệt
-          </button>
-          <button 
-            className={`filter-btn ${statusFilter === 'rejected' ? 'active' : ''}`}
-            onClick={() => handleStatusFilter('rejected')}
-          >
-            ❌ Từ chối
-          </button>
+        <div className="filter-section">
+          <div className="filter-container">
+            <button
+              className={`filter-btn ${statusFilter === '' ? 'active' : ''}`}
+              onClick={() => handleStatusFilter('')}
+            >
+              <span className="filter-icon">📋</span>
+              <span>Tất cả</span>
+            </button>
+            <button
+              className={`filter-btn pending ${statusFilter === 'pending' ? 'active' : ''}`}
+              onClick={() => handleStatusFilter('pending')}
+            >
+              <span className="filter-icon">⏳</span>
+              <span>Đang xem xét</span>
+            </button>
+            <button
+              className={`filter-btn approved ${statusFilter === 'approved' ? 'active' : ''}`}
+              onClick={() => handleStatusFilter('approved')}
+            >
+              <span className="filter-icon">✅</span>
+              <span>Đã duyệt</span>
+            </button>
+            <button
+              className={`filter-btn rejected ${statusFilter === 'rejected' ? 'active' : ''}`}
+              onClick={() => handleStatusFilter('rejected')}
+            >
+              <span className="filter-icon">❌</span>
+              <span>Từ chối</span>
+            </button>
+          </div>
         </div>
       )}
 
+      {/* Error Message */}
       {error && (
-        <div className="error-message">
-          <span className="error-icon">⚠️</span>
-          {error}
+        <div className="error-section">
+          <div className="error-card">
+            <div className="error-icon">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <div className="error-content">
+              <h3 className="error-title">Không tìm thấy kết quả</h3>
+              <p className="error-text">{error}</p>
+            </div>
+          </div>
         </div>
       )}
 
