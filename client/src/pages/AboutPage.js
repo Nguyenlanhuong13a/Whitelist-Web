@@ -44,7 +44,7 @@ function AboutPage() {
             <div className="space-y-6 text-gray-300 leading-relaxed">
               <p>
                 Chúng tôi là một cộng đồng FiveM roleplay tập trung vào việc tạo ra trải nghiệm chơi game chân thực và hấp dẫn.
-                Máy chủ của chúng tôi được thành lập vào năm 2022 với mục tiêu xây dựng một môi trường thân thiện, sáng tạo và
+                Máy chủ của chúng tôi được thành lập vào năm 2025 với mục tiêu xây dựng một môi trường thân thiện, sáng tạo và
                 cạnh tranh lành mạnh cho người chơi.
               </p>
               <p>
