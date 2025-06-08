@@ -8,14 +8,12 @@ function HomePage() {
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in">
-            <div className="inline-flex items-center space-x-4 mb-8">
-              <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-3xl flex items-center justify-center shadow-glow animate-bounce-subtle p-2">
-                <img
-                  src="/west-logo.png"
-                  alt="West Roleplay Logo"
-                  className="w-full h-full object-contain rounded-2xl"
-                />
-              </div>
+            <div className="inline-flex items-center space-x-6 mb-8">
+              <img
+                src="/west-logo.png"
+                alt="West Roleplay Logo"
+                className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 object-contain animate-bounce-subtle"
+              />
               <div className="text-left">
                 <h1 className="text-5xl md:text-7xl font-display font-bold bg-gradient-to-r from-primary-400 via-secondary-400 to-primary-400 bg-clip-text text-transparent">
                   West Roleplay

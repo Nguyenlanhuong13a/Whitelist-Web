@@ -92,13 +92,11 @@ function AppContent() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center space-x-4 animate-fade-in">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-glow p-1">
-                <img
-                  src="/west-logo.png"
-                  alt="West Roleplay Logo"
-                  className="w-full h-full object-contain rounded-lg"
-                />
-              </div>
+              <img
+                src="/west-logo.png"
+                alt="West Roleplay Logo"
+                className="w-14 h-14 sm:w-16 sm:h-16 object-contain"
+              />
               <div>
                 <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent">
                   West Roleplay
