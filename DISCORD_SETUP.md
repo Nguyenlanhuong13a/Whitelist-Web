@@ -110,6 +110,12 @@ DISCORD_MODERATOR_ROLE_ID=your_moderator_role_id_here
 - Ensure the role is assigned to the users who should have permission
 - Check server console logs for permission check details
 
+### Rejection Reason Modal Not Appearing
+- Ensure the Discord client supports modals (updated Discord app)
+- Check if the bot has proper permissions to show modals
+- Verify the interaction is not timing out (Discord has 3-second limit)
+- Look for modal-related errors in server console logs
+
 ## Security Notes
 
 1. **Never share your bot token** - treat it like a password
@@ -118,6 +124,27 @@ DISCORD_MODERATOR_ROLE_ID=your_moderator_role_id_here
 4. **Regenerate token if compromised** - you can regenerate the token in the Developer Portal
 
 ## Advanced Configuration
+
+### Rejection Reason Feature
+The bot now supports collecting rejection reasons when moderators reject applications:
+
+1. **How it works:**
+   - When a moderator clicks "Từ chối" (Reject), a modal appears
+   - The modal contains a text input for entering rejection reason
+   - Rejection reason is optional but encouraged for transparency
+   - The reason is saved to the database and displayed in Discord embed
+   - Applicants can see the rejection reason when checking status
+
+2. **Modal Features:**
+   - Supports up to 1000 characters
+   - Multi-line text input (paragraph style)
+   - Vietnamese text and special characters supported
+   - Optional field (can be submitted empty)
+
+3. **Where rejection reasons appear:**
+   - Updated Discord message embed (in "💬 Phản hồi" field)
+   - Web interface status checker (shows as "Phản hồi từ Admin")
+   - Database feedback field for record keeping
 
 ### Slash Commands (Optional)
 If you want to add slash commands for admin functions:

@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Events } = require('discord.js');
+const { Client, GatewayIntentBits, Events, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
 
 class DiscordBot {
   constructor() {
@@ -64,15 +64,18 @@ class DiscordBot {
       }
     });
 
-    // Handle button interactions
+    // Handle interactions (buttons and modals)
     this.client.on(Events.InteractionCreate, async (interaction) => {
       try {
-        if (!interaction.isButton()) return;
-
-        console.log(`🔘 Button interaction received: ${interaction.customId}`);
-        await this.handleButtonInteraction(interaction);
+        if (interaction.isButton()) {
+          console.log(`🔘 Button interaction received: ${interaction.customId}`);
+          await this.handleButtonInteraction(interaction);
+        } else if (interaction.isModalSubmit()) {
+          console.log(`📝 Modal submission received: ${interaction.customId}`);
+          await this.handleModalSubmission(interaction);
+        }
       } catch (error) {
-        console.error('Error handling button interaction:', error);
+        console.error('Error handling interaction:', error);
 
         // Try to respond with error message if possible
         try {
@@ -271,15 +274,144 @@ class DiscordBot {
         username: interaction.user.username
       };
 
-      // Update application status
-      let statusMessage;
+      // Handle approve vs reject differently
       if (action === 'approve') {
+        // Direct approval
         await application.approve(reviewer);
-        statusMessage = `✅ Đơn đăng ký đã được duyệt bởi ${reviewer.username}`;
-      } else {
-        await application.reject(reviewer);
-        statusMessage = `❌ Đơn đăng ký đã bị từ chối bởi ${reviewer.username}`;
+        const statusMessage = `✅ Đơn đăng ký đã được duyệt bởi ${reviewer.username}`;
+
+        // Update the Discord message to show the new status
+        try {
+          const discordService = require('./discordService');
+          await discordService.updateApplicationMessage(application, interaction.message);
+        } catch (updateError) {
+          console.error('Failed to update Discord message:', updateError);
+        }
+
+        // Respond to the interaction
+        await interaction.reply({
+          content: statusMessage,
+          flags: 64 // Ephemeral flag
+        });
+
+        console.log(`✅ Application ${applicationId} approved by ${reviewer.username}`);
+
+      } else if (action === 'reject') {
+        // Show modal for rejection reason
+        await this.showRejectionReasonModal(interaction, applicationId);
       }
+
+    } catch (error) {
+      console.error('Button interaction error:', error);
+      await interaction.reply({
+        content: '❌ Có lỗi xảy ra khi xử lý yêu cầu của bạn.',
+        flags: 64 // Ephemeral flag
+      });
+    }
+  }
+
+  async showRejectionReasonModal(interaction, applicationId) {
+    try {
+      // Create the modal
+      const modal = new ModalBuilder()
+        .setCustomId(`rejection_modal_${applicationId}`)
+        .setTitle('Lý do từ chối đơn đăng ký');
+
+      // Create the text input for rejection reason
+      const reasonInput = new TextInputBuilder()
+        .setCustomId('rejection_reason')
+        .setLabel('Lý do từ chối (tùy chọn)')
+        .setStyle(TextInputStyle.Paragraph)
+        .setPlaceholder('Nhập lý do từ chối đơn đăng ký này...\nVí dụ: Thiếu thông tin, không đủ tuổi, vi phạm quy định, v.v.')
+        .setRequired(false)
+        .setMaxLength(1000);
+
+      // Add the input to an action row
+      const actionRow = new ActionRowBuilder().addComponents(reasonInput);
+      modal.addComponents(actionRow);
+
+      // Show the modal
+      await interaction.showModal(modal);
+      console.log(`📝 Rejection reason modal shown for application ${applicationId}`);
+
+    } catch (error) {
+      console.error('Error showing rejection reason modal:', error);
+
+      // Fallback: reject without reason
+      await interaction.reply({
+        content: '❌ Không thể hiển thị form lý do từ chối. Đơn đăng ký sẽ bị từ chối không có lý do.',
+        flags: 64 // Ephemeral flag
+      });
+
+      // Proceed with rejection without reason
+      await this.processRejection(interaction, applicationId, '');
+    }
+  }
+
+  async handleModalSubmission(interaction) {
+    const { customId } = interaction;
+
+    // Check if this is a rejection reason modal
+    if (customId.startsWith('rejection_modal_')) {
+      const applicationId = customId.replace('rejection_modal_', '');
+
+      // Check permissions first
+      const hasPermission = await this.checkModeratorPermission(interaction);
+      if (!hasPermission) {
+        await interaction.reply({
+          content: '❌ Bạn không có quyền thực hiện hành động này. Chỉ có moderator mới có thể từ chối đơn đăng ký.',
+          flags: 64 // Ephemeral flag
+        });
+        return;
+      }
+
+      // Get the rejection reason from the modal
+      const rejectionReason = interaction.fields.getTextInputValue('rejection_reason') || '';
+
+      console.log(`📝 Rejection reason received for application ${applicationId}: "${rejectionReason}"`);
+
+      // Process the rejection with the reason
+      await this.processRejection(interaction, applicationId, rejectionReason);
+    }
+  }
+
+  async processRejection(interaction, applicationId, rejectionReason) {
+    try {
+      // Import Application model here to avoid circular dependency
+      const Application = require('../models/Application');
+
+      // Find the application
+      const application = await Application.findById(applicationId);
+
+      if (!application) {
+        await interaction.reply({
+          content: '❌ Không tìm thấy đơn đăng ký.',
+          flags: 64 // Ephemeral flag
+        });
+        return;
+      }
+
+      // Check if application is still pending
+      if (application.status !== 'pending') {
+        await interaction.reply({
+          content: `❌ Đơn đăng ký này đã được ${application.status === 'approved' ? 'duyệt' : 'từ chối'}.`,
+          flags: 64 // Ephemeral flag
+        });
+        return;
+      }
+
+      // Get reviewer information
+      const reviewer = {
+        discordId: interaction.user.id,
+        username: interaction.user.username
+      };
+
+      // Reject the application with the reason
+      await application.reject(reviewer, rejectionReason);
+
+      const statusMessage = rejectionReason
+        ? `❌ Đơn đăng ký đã bị từ chối bởi ${reviewer.username}\n📝 Lý do: ${rejectionReason}`
+        : `❌ Đơn đăng ký đã bị từ chối bởi ${reviewer.username}`;
 
       // Update the Discord message to show the new status
       try {
@@ -295,12 +427,12 @@ class DiscordBot {
         flags: 64 // Ephemeral flag
       });
 
-      console.log(`✅ Application ${applicationId} ${action}ed by ${reviewer.username}`);
+      console.log(`✅ Application ${applicationId} rejected by ${reviewer.username} with reason: "${rejectionReason}"`);
 
     } catch (error) {
-      console.error('Button interaction error:', error);
+      console.error('Error processing rejection:', error);
       await interaction.reply({
-        content: '❌ Có lỗi xảy ra khi xử lý yêu cầu của bạn.',
+        content: '❌ Có lỗi xảy ra khi xử lý việc từ chối đơn đăng ký.',
         flags: 64 // Ephemeral flag
       });
     }

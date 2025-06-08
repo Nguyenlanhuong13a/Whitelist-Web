@@ -6,7 +6,9 @@ A comprehensive web application for managing FiveM server whitelist applications
 
 - **Web Application Form**: User-friendly interface for submitting whitelist applications
 - **Discord Integration**: Automatic notifications to Discord with interactive approval/rejection buttons
-- **Status Checking**: Real-time status checking for submitted applications
+- **Rejection Reason System**: Moderators can provide detailed feedback when rejecting applications
+- **Status Checking**: Real-time status checking for submitted applications with rejection reasons
+- **Role-Based Permissions**: Discord role-based access control for moderator actions
 - **Database Storage**: MongoDB integration for persistent data storage
 - **Vietnamese Language Support**: Full Vietnamese language interface
 
@@ -104,9 +106,10 @@ The application will be available at:
 2. Application is saved to MongoDB
 3. Discord notification is sent to configured channel with embed and buttons
 4. Admin clicks "Approve" or "Reject" button in Discord
-5. Application status is updated in database
-6. Discord message is updated to show new status
-7. User can check status through web interface
+5. **For Rejections**: Modal appears asking for rejection reason (optional)
+6. Application status is updated in database with feedback
+7. Discord message is updated to show new status and rejection reason
+8. User can check status through web interface and see rejection feedback
 
 ## Application Status System
 
