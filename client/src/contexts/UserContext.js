@@ -13,6 +13,7 @@ export const useUser = () => {
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState('disconnected'); // disconnected, connecting, connected
 
   // Load user data from localStorage on mount
   useEffect(() => {
@@ -22,10 +23,14 @@ export const UserProvider = ({ children }) => {
         if (userData) {
           const parsedUser = JSON.parse(userData);
           setUser(parsedUser);
+          setConnectionStatus(parsedUser?.discordId ? 'connected' : 'disconnected');
+        } else {
+          setConnectionStatus('disconnected');
         }
       } catch (error) {
         console.error('Error loading user data:', error);
         localStorage.removeItem('westRoleplayUser');
+        setConnectionStatus('disconnected');
       } finally {
         setLoading(false);
       }
@@ -46,6 +51,7 @@ export const UserProvider = ({ children }) => {
   const connectDiscord = async (code) => {
     try {
       setLoading(true);
+      setConnectionStatus('connecting');
       console.log('Starting Discord connection with code:', code ? 'present' : 'missing');
 
       const response = await fetch('/api/auth/discord/callback', {
@@ -79,11 +85,24 @@ export const UserProvider = ({ children }) => {
         username: userData.user?.discordUsername
       });
 
-      setUser(userData.user);
+      // Immediately update user state and force localStorage sync
+      const newUser = userData.user;
+      setUser(newUser);
+      setConnectionStatus('connected');
+
+      // Force immediate localStorage update to prevent race conditions
+      if (newUser) {
+        localStorage.setItem('westRoleplayUser', JSON.stringify(newUser));
+        console.log('User data immediately saved to localStorage');
+      }
+
+      // Add a small delay to ensure state has propagated
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       return userData;
     } catch (error) {
       console.error('Discord connection error:', error);
+      setConnectionStatus('disconnected');
 
       // Enhance error message for network issues
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
@@ -99,10 +118,11 @@ export const UserProvider = ({ children }) => {
   const disconnectDiscord = async () => {
     try {
       setLoading(true);
-      
+      setConnectionStatus('disconnected');
+
       // Clear user data
       setUser(null);
-      
+
       // Optional: Call backend to invalidate any server-side sessions
       try {
         await fetch('/api/auth/discord/disconnect', {
@@ -115,7 +135,7 @@ export const UserProvider = ({ children }) => {
         // Non-critical error, user data is already cleared locally
         console.warn('Failed to notify server of disconnect:', error);
       }
-      
+
     } catch (error) {
       console.error('Discord disconnect error:', error);
       throw error;
@@ -152,6 +172,7 @@ export const UserProvider = ({ children }) => {
     disconnectDiscord,
     refreshUserData,
     isConnected: !!user?.discordId,
+    connectionStatus,
   };
 
   return (

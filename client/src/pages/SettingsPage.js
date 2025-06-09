@@ -70,6 +70,17 @@ function SettingsPage() {
         'Kết nối Discord thành công!'
       );
 
+      // Force refresh user data to ensure UI is in sync
+      if (user?.discordId) {
+        console.log('User already connected, refreshing data...');
+      } else {
+        console.log('Waiting for user data to sync...');
+        // Small delay to allow UserContext to update
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
       return;

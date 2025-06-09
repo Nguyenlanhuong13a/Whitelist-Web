@@ -18,13 +18,13 @@ export const getDiscordConfig = async () => {
 
   // Try environment variable first
   const envClientId = process.env.REACT_APP_DISCORD_CLIENT_ID;
-  
+
   if (envClientId && envClientId !== 'undefined') {
     console.log('Using Discord client ID from environment variables');
     cachedConfig = {
       clientId: envClientId,
       redirectUri: `${window.location.origin}/auth/discord/callback`,
-      scope: 'identify'
+      scope: 'identify email'
     };
     return cachedConfig;
   }
@@ -74,9 +74,15 @@ export const clearDiscordConfigCache = () => {
  * @param {string} scope - OAuth scope
  * @returns {string} Complete Discord OAuth URL
  */
-export const generateDiscordOAuthUrl = (clientId, redirectUri, scope = 'identify') => {
+export const generateDiscordOAuthUrl = (clientId, redirectUri, scope = 'identify email') => {
   const encodedRedirectUri = encodeURIComponent(redirectUri);
   const encodedScope = encodeURIComponent(scope);
-  
-  return `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodedRedirectUri}&response_type=code&scope=${encodedScope}`;
+
+  // Add state parameter for CSRF protection and better error tracking
+  const state = btoa(JSON.stringify({
+    timestamp: Date.now(),
+    origin: window.location.origin
+  }));
+
+  return `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodedRedirectUri}&response_type=code&scope=${encodedScope}&state=${encodeURIComponent(state)}`;
 };

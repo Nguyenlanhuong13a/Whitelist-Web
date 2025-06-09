@@ -12,11 +12,24 @@ const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI || 'http://localho
 // POST /api/auth/discord/callback - Handle Discord OAuth callback
 router.post('/discord/callback', async (req, res) => {
   try {
-    const { code } = req.body;
+    const { code, state } = req.body;
 
     if (!code) {
-      return res.status(400).json({ error: 'Authorization code is required' });
+      return res.status(400).json({
+        error: 'Authorization code is required',
+        details: 'No authorization code provided in request'
+      });
     }
+
+    // Validate code format (Discord codes are typically 30 characters)
+    if (typeof code !== 'string' || code.length < 20 || code.length > 50) {
+      return res.status(400).json({
+        error: 'Invalid authorization code format',
+        details: 'Authorization code appears to be malformed'
+      });
+    }
+
+    console.log('Processing Discord OAuth callback with code length:', code.length);
 
     // Exchange code for access token
     const tokenResponse = await axios.post('https://discord.com/api/oauth2/token', {
@@ -29,6 +42,7 @@ router.post('/discord/callback', async (req, res) => {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
+      timeout: 10000, // 10 second timeout
     });
 
     const { access_token } = tokenResponse.data;
@@ -117,9 +131,29 @@ router.post('/discord/callback', async (req, res) => {
         url: error.config?.url
       });
 
+      // Handle specific Discord OAuth errors
+      const discordError = error.response.data.error;
+      const discordErrorDescription = error.response.data.error_description;
+
+      if (discordError === 'invalid_grant') {
+        return res.status(400).json({
+          error: 'Invalid "code" in request',
+          details: 'Authorization code has expired or been used already. Please try connecting again.',
+          statusCode: error.response.status
+        });
+      }
+
+      if (discordError === 'invalid_request') {
+        return res.status(400).json({
+          error: 'Invalid OAuth request',
+          details: discordErrorDescription || 'The OAuth request parameters are invalid',
+          statusCode: error.response.status
+        });
+      }
+
       return res.status(400).json({
         error: 'Failed to authenticate with Discord',
-        details: error.response.data.error_description || error.response.data.error || 'Unknown Discord error',
+        details: discordErrorDescription || discordError || 'Unknown Discord error',
         statusCode: error.response.status
       });
     }
@@ -129,6 +163,14 @@ router.post('/discord/callback', async (req, res) => {
       return res.status(503).json({
         error: 'Unable to connect to Discord services',
         details: 'Please try again later'
+      });
+    }
+
+    if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+      console.error('Timeout error during Discord OAuth:', error.message);
+      return res.status(408).json({
+        error: 'Request timeout',
+        details: 'Discord authentication timed out. Please try again.'
       });
     }
 

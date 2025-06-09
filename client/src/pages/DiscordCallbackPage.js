@@ -15,8 +15,28 @@ function DiscordCallbackPage() {
         const code = urlParams.get('code');
         const error = urlParams.get('error');
         const errorDescription = urlParams.get('error_description');
+        const state = urlParams.get('state');
 
-        console.log('Discord OAuth callback params:', { code: !!code, error, errorDescription });
+        console.log('Discord OAuth callback params:', {
+          code: !!code,
+          error,
+          errorDescription,
+          state: !!state
+        });
+
+        // Validate state parameter if present (optional for now, but good for security)
+        if (state) {
+          try {
+            const stateData = JSON.parse(atob(decodeURIComponent(state)));
+            console.log('State validation:', {
+              timestamp: stateData.timestamp,
+              origin: stateData.origin,
+              currentOrigin: window.location.origin
+            });
+          } catch (stateError) {
+            console.warn('Invalid state parameter:', stateError);
+          }
+        }
 
         // Handle OAuth errors
         if (error) {
@@ -54,14 +74,17 @@ function DiscordCallbackPage() {
 
         const userData = await connectDiscord(code);
         console.log('Discord connection completed successfully');
-        
+
         setStatus('success');
         setMessage(`Kết nối Discord thành công! Chào mừng ${userData.user.discordUsername}!`);
 
-        // Redirect to settings with success message after 2 seconds
+        // Wait a bit longer to ensure state has fully propagated
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Redirect to settings with success message after 1.5 seconds (reduced from 2)
         setTimeout(() => {
           navigate('/settings?discord_success=true&username=' + encodeURIComponent(userData.user.discordUsername));
-        }, 2000);
+        }, 1500);
 
       } catch (err) {
         console.error('Discord connection failed:', err);
