@@ -10,9 +10,10 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "install-all": "npm install && npm install --prefix client",
     "test-setup": "node server/test-setup.js",
-    "build": "cd client && npm install && npm run build",
+    "build": "cd client && npm ci && npm run build",
     "postbuild": "npm install --only=production",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run build",
+    "railway-build": "npm ci && cd client && npm ci && npm run build"
   },
   "keywords": [
     "fivem",
