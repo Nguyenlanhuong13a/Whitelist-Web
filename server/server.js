@@ -21,7 +21,12 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production'
-    ? [process.env.FRONTEND_URL, process.env.RAILWAY_STATIC_URL, process.env.RENDER_EXTERNAL_URL].filter(Boolean)
+    ? [
+        'https://whitelistweb.up.railway.app',
+        process.env.FRONTEND_URL,
+        process.env.RAILWAY_STATIC_URL,
+        process.env.RENDER_EXTERNAL_URL
+      ].filter(Boolean)
     : ['http://localhost:3000', 'http://localhost:3001'],
   credentials: true,
   optionsSuccessStatus: 200
@@ -30,6 +35,15 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`📝 ${new Date().toISOString()} - ${req.method} ${req.path}`);
+  if (req.method === 'POST' && req.path.includes('/api/')) {
+    console.log('📦 Request body keys:', Object.keys(req.body || {}));
+  }
+  next();
+});
 
 // Routes
 app.use('/api/applications', applicationRoutes);
@@ -72,11 +86,19 @@ app.use('*', (req, res) => {
 const connectDB = async () => {
   try {
     const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/whitelist-web';
-    await mongoose.connect(mongoURI);
+    console.log('🔄 Attempting to connect to MongoDB...');
+    console.log('📍 MongoDB URI:', mongoURI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@')); // Hide credentials in logs
+
+    await mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 10000, // 10 second timeout
+      socketTimeoutMS: 45000, // 45 second socket timeout
+    });
+
     console.log('✅ MongoDB connected successfully');
     return true;
   } catch (error) {
     console.error('❌ MongoDB connection error:', error.message);
+    console.error('📋 Full error details:', error);
     console.log('⚠️ Server will continue without database (Discord integration will still work)');
     return false;
   }

@@ -125,6 +125,29 @@ router.post('/', validateApplication, async (req, res) => {
 
   } catch (error) {
     console.error('Application submission error:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
+
+    // Check if it's a database connection error
+    if (error.name === 'MongoNetworkError' || error.name === 'MongooseServerSelectionError') {
+      return res.status(503).json({
+        error: 'Database connection error',
+        message: 'Không thể kết nối đến cơ sở dữ liệu. Vui lòng thử lại sau.'
+      });
+    }
+
+    // Check if it's a validation error
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        error: 'Validation error',
+        message: 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin.',
+        details: Object.values(error.errors).map(err => err.message)
+      });
+    }
+
     res.status(500).json({
       error: 'Internal server error',
       message: 'Có lỗi xảy ra khi gửi đơn đăng ký'
