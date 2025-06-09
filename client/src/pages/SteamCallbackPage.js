@@ -13,6 +13,7 @@ function SteamCallbackPage() {
   const [debugInfo, setDebugInfo] = useState(null);
   const [countdown, setCountdown] = useState(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   // Monitor user context changes
   useEffect(() => {
@@ -26,8 +27,11 @@ function SteamCallbackPage() {
   }, [user, checkSteamAuth]);
 
   useEffect(() => {
+    let cleanupFunction = null;
+
     const handleCallback = async () => {
       try {
+        setHasError(false);
         console.log('=== Steam Callback Processing Started ===');
         console.log('Current URL:', window.location.href);
         console.log('Location search:', location.search);
@@ -179,21 +183,20 @@ function SteamCallbackPage() {
               }
             }, 1000);
 
-            // Store cleanup function to return later
-            const cleanupFunction = () => {
+            // Store cleanup function
+            cleanupFunction = () => {
               if (countdownInterval) {
                 clearInterval(countdownInterval);
               }
             };
 
-            // Return cleanup function for this success case
-            return cleanupFunction;
-
           } catch (parseError) {
             console.error('❌ Error parsing user data:', parseError);
             console.error('Raw data that failed to parse:', successData);
-            throw new Error('Dữ liệu người dùng không hợp lệ');
+            setStatus('error');
+            setMessage('Dữ liệu người dùng không hợp lệ');
           }
+          return;
         }
 
         // Check for error
@@ -208,8 +211,7 @@ function SteamCallbackPage() {
           setTimeout(() => {
             navigate('/login?error=' + encodeURIComponent(decodedError));
           }, 4000);
-
-          return () => {}; // Return empty cleanup function
+          return;
         }
 
         // No data or error found, this shouldn't happen
@@ -224,25 +226,44 @@ function SteamCallbackPage() {
           navigate('/login?error=' + encodeURIComponent('Phiên đăng nhập Steam bị gián đoạn'));
         }, 4000);
 
-        return () => {}; // Return empty cleanup function
-        
       } catch (error) {
         console.error('Steam callback processing error:', error);
+        setHasError(true);
         setStatus('error');
         setMessage(`Lỗi xử lý đăng nhập: ${error.message}`);
 
         setTimeout(() => {
-          navigate('/login?error=' + encodeURIComponent(error.message));
+          try {
+            navigate('/login?error=' + encodeURIComponent(error.message));
+          } catch (navError) {
+            console.error('Navigation error:', navError);
+            window.location.href = '/login';
+          }
         }, 3000);
-
-        return () => {}; // Return empty cleanup function
       }
     };
 
-    const cleanup = handleCallback();
+    // Execute the async function with error handling
+    try {
+      handleCallback().catch(error => {
+        console.error('Async handleCallback error:', error);
+        setHasError(true);
+        setStatus('error');
+        setMessage('Có lỗi xảy ra trong quá trình xử lý đăng nhập Steam');
+      });
+    } catch (syncError) {
+      console.error('Sync handleCallback error:', syncError);
+      setHasError(true);
+      setStatus('error');
+      setMessage('Có lỗi xảy ra trong quá trình xử lý đăng nhập Steam');
+    }
 
     // Return cleanup function for useEffect
-    return cleanup;
+    return () => {
+      if (cleanupFunction) {
+        cleanupFunction();
+      }
+    };
   }, [location, navigate, setSteamUser, user, checkSteamAuth]);
 
   const getStatusIcon = () => {
@@ -285,10 +306,80 @@ function SteamCallbackPage() {
 
   console.log('🎮 SteamCallbackPage rendering with status:', status, 'message:', message);
 
+  // Error boundary fallback
+  if (hasError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4" style={{
+        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)'
+      }}>
+        <div className="max-w-md w-full">
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '20px',
+            padding: '32px',
+            textAlign: 'center',
+            color: 'white'
+          }}>
+            <div style={{ marginBottom: '24px' }}>
+              <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '8px' }}>Steam Authentication</h1>
+            </div>
+            <div style={{ color: '#ef4444', marginBottom: '16px' }}>
+              ❌ Có lỗi xảy ra trong quá trình xử lý đăng nhập Steam
+            </div>
+            <button
+              onClick={() => window.location.href = '/login'}
+              style={{
+                background: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px'
+              }}
+            >
+              Thử lại
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
-      <div className="max-w-md w-full">
-        <div className="glass-card p-8 text-center">
+    <div
+      className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900"
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)'
+      }}
+    >
+      <div
+        className="max-w-md w-full"
+        style={{
+          maxWidth: '28rem',
+          width: '100%'
+        }}
+      >
+        <div
+          className="glass-card p-8 text-center"
+          style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '20px',
+            padding: '32px',
+            textAlign: 'center',
+            color: 'white',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+          }}
+        >
           <div className="mb-6">
             <img
               src="/west-logo.png"
