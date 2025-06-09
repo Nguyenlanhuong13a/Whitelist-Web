@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 
 function SteamCallbackPage() {
+  console.log('🎮 SteamCallbackPage component rendering...');
+
   const navigate = useNavigate();
   const location = useLocation();
   const { setSteamUser, user, checkSteamAuth } = useUser();
@@ -281,8 +283,10 @@ function SteamCallbackPage() {
     }
   };
 
+  console.log('🎮 SteamCallbackPage rendering with status:', status, 'message:', message);
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
       <div className="max-w-md w-full">
         <div className="glass-card p-8 text-center">
           <div className="mb-6">
@@ -290,6 +294,10 @@ function SteamCallbackPage() {
               src="/west-logo.png"
               alt="West Roleplay Logo"
               className="w-12 h-12 mx-auto mb-4"
+              onError={(e) => {
+                console.log('❌ Logo failed to load');
+                e.target.style.display = 'none';
+              }}
             />
             <h1 className="text-2xl font-bold text-white mb-2">Steam Authentication</h1>
           </div>
