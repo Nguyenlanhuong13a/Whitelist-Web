@@ -164,7 +164,50 @@ router.post('/', validateApplication, async (req, res) => {
   }
 });
 
-// GET /api/applications/status/:discordId - Check application status
+// GET /api/applications/status/steam/:steamId - Check application status by Steam ID
+router.get('/status/steam/:steamId', async (req, res) => {
+  try {
+    // Check database connection
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        error: 'Database not connected',
+        message: 'Không thể kết nối đến cơ sở dữ liệu. Vui lòng thử lại sau.'
+      });
+    }
+
+    const { steamId } = req.params;
+
+    if (!steamId) {
+      return res.status(400).json({
+        error: 'Steam ID is required'
+      });
+    }
+
+    const application = await Application.findOne({ steamId });
+
+    if (!application) {
+      return res.status(404).json({
+        error: 'Application not found',
+        message: 'Không tìm thấy đơn đăng ký với Steam ID này'
+      });
+    }
+
+    res.json({
+      success: true,
+      application: application.toPublicJSON()
+    });
+
+  } catch (error) {
+    console.error('Status check error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Có lỗi xảy ra khi kiểm tra trạng thái'
+    });
+  }
+});
+
+// GET /api/applications/status/:discordId - Check application status by Discord ID (legacy)
 router.get('/status/:discordId', async (req, res) => {
   try {
     // Check database connection

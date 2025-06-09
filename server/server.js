@@ -27,6 +27,9 @@ const applicationRoutes = require('./routes/applications');
 const discordRoutes = require('./routes/discord');
 const authRoutes = require('./routes/auth');
 
+// Import middleware
+const { optionalSteamAuth } = require('./middleware/auth');
+
 // Import Discord bot
 const discordBot = require('./services/discordBot');
 
@@ -63,9 +66,9 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/api/applications', applicationRoutes);
-app.use('/api/discord', discordRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes); // Auth routes don't need middleware
+app.use('/api/applications', optionalSteamAuth, applicationRoutes); // Applications can work with optional auth
+app.use('/api/discord', optionalSteamAuth, discordRoutes); // Discord routes with optional auth
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

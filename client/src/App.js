@@ -2,16 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import './App.css';
 import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import StatusPage from './pages/StatusPage';
 import RulesPage from './pages/RulesPage';
 import AboutPage from './pages/AboutPage';
 import HistoryPage from './pages/HistoryPage';
 import SettingsPage from './pages/SettingsPage';
+import SteamLoginPage from './pages/SteamLoginPage';
+import SteamCallbackPage from './pages/SteamCallbackPage';
 import DiscordCallbackPage from './pages/DiscordCallbackPage';
-import { UserProvider } from './contexts/UserContext';
+import { UserProvider, useUser } from './contexts/UserContext';
 
 function AppContent() {
+  const { user, logout, checkSteamAuth } = useUser();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -119,28 +123,57 @@ function AppContent() {
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-2">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.to === '/'}
-                  className={({ isActive }) =>
-                    `group relative px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                      isActive
-                        ? 'bg-gradient-to-r from-primary-600 to-secondary-600 text-white shadow-glow'
-                        : 'text-gray-300 hover:text-white hover:bg-dark-700/50'
-                    }`
-                  }
-                >
-                  <span className="flex items-center space-x-2">
-                    <span className="flex items-center">{item.icon}</span>
-                    <span>{item.label}</span>
-                  </span>
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                </NavLink>
-              ))}
-            </nav>
+            <div className="hidden md:flex items-center space-x-4">
+              <nav className="flex items-center space-x-2">
+                {navItems.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.to === '/'}
+                    className={({ isActive }) =>
+                      `group relative px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                        isActive
+                          ? 'bg-gradient-to-r from-primary-600 to-secondary-600 text-white shadow-glow'
+                          : 'text-gray-300 hover:text-white hover:bg-dark-700/50'
+                      }`
+                    }
+                  >
+                    <span className="flex items-center space-x-2">
+                      <span className="flex items-center">{item.icon}</span>
+                      <span>{item.label}</span>
+                    </span>
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                  </NavLink>
+                ))}
+              </nav>
+
+              {/* User Info & Logout */}
+              {checkSteamAuth() && user && (
+                <div className="flex items-center space-x-3 pl-4 border-l border-gray-700">
+                  <div className="flex items-center space-x-2">
+                    {user.steamAvatar && (
+                      <img
+                        src={user.steamAvatar}
+                        alt={user.steamUsername}
+                        className="w-8 h-8 rounded-full"
+                      />
+                    )}
+                    <span className="text-gray-300 text-sm font-medium">
+                      {user.steamUsername}
+                    </span>
+                  </div>
+                  <button
+                    onClick={logout}
+                    className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                    title="Đăng xuất"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Mobile Menu Button */}
             <button
@@ -161,11 +194,42 @@ function AppContent() {
           {isMobileMenuOpen && (
             <div className="md:hidden py-4 animate-slide-down">
               <div className="flex flex-col space-y-2">
+                {/* User Info in Mobile Menu */}
+                {checkSteamAuth() && user && (
+                  <div className="flex items-center justify-between p-4 border-b border-gray-700 mb-2">
+                    <div className="flex items-center space-x-3">
+                      {user.steamAvatar && (
+                        <img
+                          src={user.steamAvatar}
+                          alt={user.steamUsername}
+                          className="w-8 h-8 rounded-full"
+                        />
+                      )}
+                      <span className="text-gray-300 text-sm font-medium">
+                        {user.steamUsername}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                      title="Đăng xuất"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+
                 {navItems.map((item) => (
                   <NavLink
                     key={item.to}
                     to={item.to}
                     end={item.to === '/'}
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className={({ isActive }) =>
                       `flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
                         isActive
@@ -188,13 +252,50 @@ function AppContent() {
       <main className="relative z-10 flex-grow">
         <div className="animate-fade-in">
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/rules" element={<RulesPage />} />
-            <Route path="/status" element={<StatusPage />} />
-            <Route path="/history" element={<HistoryPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/auth/discord/callback" element={<DiscordCallbackPage />} />
+            {/* Public routes */}
+            <Route path="/login" element={<SteamLoginPage />} />
+            <Route path="/auth/steam/callback" element={<SteamCallbackPage />} />
+            <Route path="/auth/steam/success" element={<SteamCallbackPage />} />
+            <Route path="/auth/steam/error" element={<SteamCallbackPage />} />
+
+            {/* Protected routes - require Steam authentication */}
+            <Route path="/" element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/rules" element={
+              <ProtectedRoute>
+                <RulesPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/status" element={
+              <ProtectedRoute>
+                <StatusPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/history" element={
+              <ProtectedRoute>
+                <HistoryPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <SettingsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/about" element={
+              <ProtectedRoute>
+                <AboutPage />
+              </ProtectedRoute>
+            } />
+
+            {/* Discord callback (for linking Discord to existing Steam account) */}
+            <Route path="/auth/discord/callback" element={
+              <ProtectedRoute>
+                <DiscordCallbackPage />
+              </ProtectedRoute>
+            } />
           </Routes>
         </div>
       </main>

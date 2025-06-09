@@ -1,15 +1,36 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  discordId: {
+  // Steam Authentication (Primary)
+  steamId: {
     type: String,
     required: true,
     unique: true,
     index: true,
   },
-  discordUsername: {
+  steamUsername: {
     type: String,
     required: true,
+  },
+  steamAvatar: {
+    type: String,
+    default: null,
+  },
+  steamProfileUrl: {
+    type: String,
+    default: null,
+  },
+
+  // Discord Authentication (Secondary/Optional)
+  discordId: {
+    type: String,
+    unique: true,
+    sparse: true, // Allows null values while maintaining uniqueness
+    index: true,
+  },
+  discordUsername: {
+    type: String,
+    default: null,
   },
   discordAvatar: {
     type: String,
@@ -19,6 +40,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+
+  // Timestamps
   createdAt: {
     type: Date,
     default: Date.now,
@@ -27,7 +50,13 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+
+  // User Preferences
   preferences: {
+    autoFillSteamId: {
+      type: Boolean,
+      default: true,
+    },
     autoFillDiscordId: {
       type: Boolean,
       default: true,
