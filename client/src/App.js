@@ -8,6 +8,7 @@ import RulesPage from './pages/RulesPage';
 import AboutPage from './pages/AboutPage';
 import HistoryPage from './pages/HistoryPage';
 import SettingsPage from './pages/SettingsPage';
+import DiscordCallbackPage from './pages/DiscordCallbackPage';
 import { UserProvider } from './contexts/UserContext';
 
 function AppContent() {
@@ -193,6 +194,7 @@ function AppContent() {
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/auth/discord/callback" element={<DiscordCallbackPage />} />
           </Routes>
         </div>
       </main>

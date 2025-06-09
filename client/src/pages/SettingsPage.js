@@ -54,57 +54,45 @@ function SettingsPage() {
     }
   };
 
-  // Handle Discord OAuth callback
+  // Handle Discord OAuth callback results from URL parameters
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const error = urlParams.get('error');
-    const errorDescription = urlParams.get('error_description');
+    const discordSuccess = urlParams.get('discord_success');
+    const discordError = urlParams.get('discord_error');
+    const username = urlParams.get('username');
 
-    console.log('OAuth callback params:', { code: !!code, error, errorDescription });
+    console.log('Discord callback result params:', { discordSuccess, discordError, username });
 
-    if (error) {
-      let errorMessage = 'Đăng nhập Discord bị hủy hoặc thất bại.';
-      if (error === 'access_denied') {
-        errorMessage = 'Bạn đã từ chối quyền truy cập Discord. Vui lòng thử lại và cho phép quyền truy cập.';
-      } else if (errorDescription) {
-        errorMessage = `Lỗi Discord: ${errorDescription}`;
-      }
-
-      setError(errorMessage);
-      setIsConnecting(false);
+    // Handle success from Discord callback
+    if (discordSuccess === 'true') {
+      setSuccess(username ?
+        `Kết nối Discord thành công! Chào mừng ${decodeURIComponent(username)}!` :
+        'Kết nối Discord thành công!'
+      );
 
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
       return;
     }
 
-    if (code && !user?.discordId) {
-      console.log('Processing Discord OAuth callback with code');
-      setIsConnecting(true);
-      setError('');
-      setSuccess('');
+    // Handle error from Discord callback
+    if (discordError) {
+      const errorMessage = decodeURIComponent(discordError);
+      console.error('Discord OAuth error from callback:', errorMessage);
 
-      // Exchange code for user info
-      connectDiscord(code)
-        .then((userData) => {
-          console.log('Discord connection completed successfully');
-          setSuccess(`Kết nối Discord thành công! Chào mừng ${userData.user.discordUsername}!`);
-          setIsConnecting(false);
+      if (errorMessage === 'access_denied') {
+        setError('Bạn đã từ chối quyền truy cập Discord. Vui lòng thử lại nếu muốn kết nối.');
+      } else if (errorMessage === 'no_code') {
+        setError('Không nhận được mã xác thực từ Discord. Vui lòng thử lại.');
+      } else {
+        setError(`Không thể kết nối Discord: ${errorMessage}`);
+      }
 
-          // Clean up URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-        })
-        .catch((err) => {
-          console.error('Discord connection failed:', err);
-          setError(`Không thể hoàn tất kết nối Discord: ${err.message}`);
-          setIsConnecting(false);
-
-          // Clean up URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-        });
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
     }
-  }, [connectDiscord, user?.discordId]);
+  }, []);
 
   return (
     <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
