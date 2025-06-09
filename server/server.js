@@ -4,8 +4,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from parent directory
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 // Import routes
 const applicationRoutes = require('./routes/applications');
@@ -118,8 +118,6 @@ const connectDB = async (retryCount = 0) => {
       maxPoolSize: 10, // Maintain up to 10 socket connections
       minPoolSize: 1, // Maintain at least 1 socket connection
       maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
-      bufferMaxEntries: 0, // Disable mongoose buffering
-      bufferCommands: false, // Disable mongoose buffering
     });
 
     console.log('✅ MongoDB connected successfully');
