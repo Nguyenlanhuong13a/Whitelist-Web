@@ -9,6 +9,8 @@ function SteamCallbackPage() {
   const [status, setStatus] = useState('processing'); // processing, success, error
   const [message, setMessage] = useState('Đang xử lý đăng nhập Steam...');
   const [debugInfo, setDebugInfo] = useState(null);
+  const [countdown, setCountdown] = useState(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Monitor user context changes
   useEffect(() => {
@@ -60,7 +62,7 @@ function SteamCallbackPage() {
             }
 
             setStatus('success');
-            setMessage(`Chào mừng ${userData.steamUsername}! Đang chuyển hướng...`);
+            setMessage(`Chào mừng ${userData.steamUsername}! Đang chuẩn bị chuyển hướng...`);
 
             // Get intended redirect destination
             const redirectTo = sessionStorage.getItem('steamAuthRedirect') || '/';
@@ -71,7 +73,9 @@ function SteamCallbackPage() {
               redirectTo,
               userDataReceived: true,
               steamId: userData.steamId,
-              timestamp: new Date().toISOString()
+              timestamp: new Date().toISOString(),
+              navigateAvailable: typeof navigate === 'function',
+              windowLocationAvailable: typeof window !== 'undefined' && !!window.location
             });
 
             sessionStorage.removeItem('steamAuthRedirect');
@@ -86,79 +90,109 @@ function SteamCallbackPage() {
               return;
             }
 
-            // Verify user context has been updated
-            const verifyUserContext = () => {
-              const storedUser = localStorage.getItem('westRoleplayUser');
-              if (storedUser) {
-                try {
-                  const parsedUser = JSON.parse(storedUser);
-                  return parsedUser.steamId === userData.steamId;
-                } catch (e) {
-                  return false;
-                }
-              }
-              return false;
-            };
+            // Create a robust navigation function
+            const performNavigation = async (destination) => {
+              console.log('🚀 Starting navigation to:', destination);
+              setIsRedirecting(true);
 
-            // Redirect after a short delay with countdown
-            let countdown = 2;
-            const countdownInterval = setInterval(() => {
-              countdown--;
-              setMessage(`Chào mừng ${userData.steamUsername}! Đang chuyển hướng trong ${countdown}s...`);
-
-              if (countdown <= 0) {
-                clearInterval(countdownInterval);
-
-                // Verify user context before navigation
-                if (!verifyUserContext()) {
-                  console.warn('⚠️ User context not yet updated, forcing localStorage update');
-                  localStorage.setItem('westRoleplayUser', JSON.stringify(userData));
-                  if (userData.authToken) {
-                    localStorage.setItem('westRoleplayAuthToken', userData.authToken);
+              // Verify user context before navigation
+              const verifyUserContext = () => {
+                const storedUser = localStorage.getItem('westRoleplayUser');
+                if (storedUser) {
+                  try {
+                    const parsedUser = JSON.parse(storedUser);
+                    return parsedUser.steamId === userData.steamId;
+                  } catch (e) {
+                    return false;
                   }
                 }
+                return false;
+              };
 
-                console.log('🚀 Executing navigation to:', redirectTo);
-
-                try {
-                  // Try React Router navigation first
-                  navigate(redirectTo, { replace: true });
-                  console.log('✅ React Router navigation completed');
-
-                  // Add a backup navigation after a short delay
-                  setTimeout(() => {
-                    if (window.location.pathname === '/auth/steam/callback') {
-                      console.log('🔄 React Router navigation may have failed, using window.location');
-                      window.location.replace(redirectTo);
-                    }
-                  }, 500);
-
-                } catch (navError) {
-                  console.error('❌ React Router navigation failed:', navError);
-                  // Fallback to window.location immediately
-                  console.log('🔄 Falling back to window.location.replace');
-                  window.location.replace(redirectTo);
+              if (!verifyUserContext()) {
+                console.warn('⚠️ User context not yet updated, forcing localStorage update');
+                localStorage.setItem('westRoleplayUser', JSON.stringify(userData));
+                if (userData.authToken) {
+                  localStorage.setItem('westRoleplayAuthToken', userData.authToken);
                 }
+              }
+
+              // Try multiple navigation methods
+              let navigationSuccessful = false;
+
+              // Method 1: React Router navigate
+              try {
+                console.log('🔄 Attempting React Router navigation...');
+                navigate(destination, { replace: true });
+                console.log('✅ React Router navigation initiated');
+
+                // Check if navigation actually happened after a short delay
+                setTimeout(() => {
+                  if (window.location.pathname === '/auth/steam/callback') {
+                    console.log('⚠️ Still on callback page, trying window.location');
+                    window.location.replace(destination);
+                  } else {
+                    console.log('✅ Navigation successful via React Router');
+                    navigationSuccessful = true;
+                  }
+                }, 300);
+
+              } catch (navError) {
+                console.error('❌ React Router navigation failed:', navError);
+              }
+
+              // Method 2: Immediate window.location fallback
+              setTimeout(() => {
+                if (!navigationSuccessful && window.location.pathname === '/auth/steam/callback') {
+                  console.log('🔄 Using window.location.replace as fallback');
+                  try {
+                    window.location.replace(destination);
+                  } catch (error) {
+                    console.error('❌ window.location.replace failed:', error);
+                    // Method 3: Last resort - window.location.href
+                    console.log('🔄 Last resort: window.location.href');
+                    window.location.href = destination;
+                  }
+                }
+              }, 600);
+            };
+
+            // Start countdown with visual feedback
+            let countdownValue = 3;
+            setCountdown(countdownValue);
+            setMessage(`Chào mừng ${userData.steamUsername}! Đang chuyển hướng trong ${countdownValue}s...`);
+
+            const countdownInterval = setInterval(() => {
+              countdownValue--;
+              setCountdown(countdownValue);
+
+              if (countdownValue > 0) {
+                setMessage(`Chào mừng ${userData.steamUsername}! Đang chuyển hướng trong ${countdownValue}s...`);
+              } else {
+                setMessage(`Chào mừng ${userData.steamUsername}! Đang chuyển hướng...`);
+                clearInterval(countdownInterval);
+
+                // Execute navigation
+                performNavigation(redirectTo);
               }
             }, 1000);
 
-            // Store cleanup function for later use
-            const cleanup = () => clearInterval(countdownInterval);
-
-            // Set a timeout to cleanup if component unmounts
-            setTimeout(() => {
+            // Store cleanup function to return later
+            const cleanupFunction = () => {
               if (countdownInterval) {
-                cleanup();
+                clearInterval(countdownInterval);
               }
-            }, 5000);
+            };
+
+            // Return cleanup function for this success case
+            return cleanupFunction;
 
           } catch (parseError) {
             console.error('❌ Error parsing user data:', parseError);
             console.error('Raw data that failed to parse:', successData);
             throw new Error('Dữ liệu người dùng không hợp lệ');
           }
-
-          return;
+        }
         }
 
         // Check for error
@@ -174,9 +208,9 @@ function SteamCallbackPage() {
             navigate('/login?error=' + encodeURIComponent(decodedError));
           }, 4000);
 
-          return;
+          return () => {}; // Return empty cleanup function
         }
-        
+
         // No data or error found, this shouldn't happen
         console.error('Steam callback: No data or error found in URL');
         console.log('Current URL:', window.location.href);
@@ -188,20 +222,27 @@ function SteamCallbackPage() {
         setTimeout(() => {
           navigate('/login?error=' + encodeURIComponent('Phiên đăng nhập Steam bị gián đoạn'));
         }, 4000);
+
+        return () => {}; // Return empty cleanup function
         
       } catch (error) {
         console.error('Steam callback processing error:', error);
         setStatus('error');
         setMessage(`Lỗi xử lý đăng nhập: ${error.message}`);
-        
+
         setTimeout(() => {
           navigate('/login?error=' + encodeURIComponent(error.message));
         }, 3000);
+
+        return () => {}; // Return empty cleanup function
       }
     };
 
-    handleCallback();
-  }, [location, navigate, setSteamUser]);
+    const cleanup = handleCallback();
+
+    // Return cleanup function for useEffect
+    return cleanup;
+  }, [location, navigate, setSteamUser, user, checkSteamAuth]);
 
   const getStatusIcon = () => {
     switch (status) {
@@ -270,26 +311,55 @@ function SteamCallbackPage() {
             {status === 'success' && (
               <div className="mt-4 space-y-2">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     const redirectTo = sessionStorage.getItem('steamAuthRedirect') || '/';
-                    console.log('🔘 Manual redirect to:', redirectTo);
+                    console.log('🔘 Manual redirect initiated to:', redirectTo);
 
+                    setIsRedirecting(true);
+                    setMessage('Đang chuyển hướng...');
+
+                    // Use the same robust navigation logic
                     try {
+                      console.log('🔄 Manual navigation attempt 1: React Router');
                       navigate(redirectTo, { replace: true });
-                      console.log('✅ Manual navigation completed');
+
+                      // Check if navigation worked
+                      setTimeout(() => {
+                        if (window.location.pathname === '/auth/steam/callback') {
+                          console.log('🔄 Manual navigation attempt 2: window.location.replace');
+                          window.location.replace(redirectTo);
+                        }
+                      }, 200);
+
                     } catch (error) {
-                      console.error('❌ Manual navigation failed:', error);
-                      window.location.replace(redirectTo);
+                      console.error('❌ Manual React Router navigation failed:', error);
+                      console.log('🔄 Manual navigation fallback: window.location.replace');
+                      try {
+                        window.location.replace(redirectTo);
+                      } catch (fallbackError) {
+                        console.error('❌ Manual window.location.replace failed:', fallbackError);
+                        console.log('🔄 Manual navigation last resort: window.location.href');
+                        window.location.href = redirectTo;
+                      }
                     }
                   }}
-                  className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                  disabled={isRedirecting}
+                  className={`px-6 py-2 ${isRedirecting ? 'bg-gray-600 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg transition-colors`}
                 >
-                  Tiếp tục ngay
+                  {isRedirecting ? 'Đang chuyển hướng...' : 'Tiếp tục ngay'}
                 </button>
 
-                <div className="text-xs text-gray-400">
-                  Hoặc đợi tự động chuyển hướng
-                </div>
+                {!isRedirecting && countdown !== null && (
+                  <div className="text-xs text-gray-400">
+                    Hoặc đợi tự động chuyển hướng ({countdown}s)
+                  </div>
+                )}
+
+                {isRedirecting && (
+                  <div className="text-xs text-yellow-400">
+                    Đang thực hiện chuyển hướng...
+                  </div>
+                )}
               </div>
             )}
 
@@ -313,8 +383,35 @@ function SteamCallbackPage() {
                   <div>User Data: {debugInfo.userDataReceived ? '✅' : '❌'}</div>
                   <div>Steam ID: {debugInfo.steamId}</div>
                   <div>Timestamp: {debugInfo.timestamp}</div>
-                  <div>Navigate Function: {typeof navigate === 'function' ? '✅' : '❌'}</div>
-                  <div>Location: {window.location.href}</div>
+                  <div>Navigate Function: {debugInfo.navigateAvailable ? '✅' : '❌'}</div>
+                  <div>Window Location: {debugInfo.windowLocationAvailable ? '✅' : '❌'}</div>
+                  <div>Current Path: {window.location.pathname}</div>
+                  <div>Is Redirecting: {isRedirecting ? '✅' : '❌'}</div>
+                  <div>Countdown: {countdown !== null ? countdown : 'N/A'}</div>
+                  <div>Status: {status}</div>
+                  <div>User Context: {user?.steamId ? '✅' : '❌'}</div>
+                </div>
+
+                <div className="mt-3 pt-2 border-t border-gray-600">
+                  <button
+                    onClick={() => {
+                      console.log('=== MANUAL DEBUG NAVIGATION TEST ===');
+                      console.log('Current location:', window.location.href);
+                      console.log('Navigate function:', typeof navigate);
+                      console.log('User context:', user);
+                      console.log('Attempting direct navigation to home...');
+                      try {
+                        navigate('/', { replace: true });
+                        console.log('Direct navigation initiated');
+                      } catch (error) {
+                        console.error('Direct navigation failed:', error);
+                        window.location.replace('/');
+                      }
+                    }}
+                    className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded"
+                  >
+                    Test Direct Navigation
+                  </button>
                 </div>
               </div>
             )}
