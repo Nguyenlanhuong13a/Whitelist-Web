@@ -19,55 +19,48 @@ function SteamCallbackPage() {
         if (successData) {
           console.log('Steam authentication successful, processing user data');
           setMessage('Đăng nhập Steam thành công!');
-          
+
           try {
             const userData = JSON.parse(decodeURIComponent(successData));
             console.log('Parsed user data:', userData);
-            
-            // Update user context
+
+            // Update user context (this will also handle localStorage storage)
             if (setSteamUser) {
               setSteamUser(userData);
             }
 
-            // Store user data and auth token in localStorage
-            const { authToken, ...userDataWithoutToken } = userData;
-            localStorage.setItem('westRoleplayUser', JSON.stringify(userDataWithoutToken));
-            if (authToken) {
-              localStorage.setItem('westRoleplayAuthToken', authToken);
-            }
-            
             setStatus('success');
             setMessage(`Chào mừng ${userData.steamUsername}! Đang chuyển hướng...`);
-            
+
             // Get intended redirect destination
             const redirectTo = sessionStorage.getItem('steamAuthRedirect') || '/';
             sessionStorage.removeItem('steamAuthRedirect');
-            
+
             // Redirect after a short delay
             setTimeout(() => {
               navigate(redirectTo);
             }, 2000);
-            
+
           } catch (parseError) {
             console.error('Error parsing user data:', parseError);
             throw new Error('Dữ liệu người dùng không hợp lệ');
           }
-          
+
           return;
         }
-        
+
         // Check for error
-        const errorMessage = searchParams.get('message');
+        const errorMessage = searchParams.get('error');
         if (errorMessage) {
           console.error('Steam authentication failed:', errorMessage);
           setStatus('error');
           setMessage(`Đăng nhập Steam thất bại: ${decodeURIComponent(errorMessage)}`);
-          
+
           // Redirect to login page after delay
           setTimeout(() => {
             navigate('/login?error=' + encodeURIComponent(errorMessage));
           }, 3000);
-          
+
           return;
         }
         

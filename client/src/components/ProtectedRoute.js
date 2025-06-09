@@ -33,12 +33,21 @@ function ProtectedRoute({ children }) {
   // Show loading spinner while checking authentication
   if (loading || isChecking) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="glass-card p-8 text-center">
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="glass-card p-8 text-center max-w-md w-full">
+          <div className="mb-6">
+            <img
+              src="/west-logo.png"
+              alt="West Roleplay Logo"
+              className="w-16 h-16 mx-auto mb-4"
+            />
+            <h1 className="text-2xl font-bold text-white mb-2">West Roleplay</h1>
+          </div>
           <div className="w-16 h-16 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <div className="w-8 h-8 border-2 border-primary-400 border-t-transparent rounded-full animate-spin"></div>
           </div>
-          <p className="text-gray-300">Đang kiểm tra xác thực...</p>
+          <p className="text-gray-300">Đang kiểm tra xác thực Steam...</p>
+          <p className="text-gray-400 text-sm mt-2">Vui lòng đợi trong giây lát</p>
         </div>
       </div>
     );

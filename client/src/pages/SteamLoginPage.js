@@ -14,7 +14,9 @@ function SteamLoginPage() {
   useEffect(() => {
     // Check if user is already authenticated
     const userData = localStorage.getItem('westRoleplayUser');
-    if (userData) {
+    const authToken = localStorage.getItem('westRoleplayAuthToken');
+
+    if (userData && authToken) {
       try {
         const user = JSON.parse(userData);
         if (user.steamId) {
@@ -25,9 +27,16 @@ function SteamLoginPage() {
       } catch (error) {
         console.error('Error parsing user data:', error);
         localStorage.removeItem('westRoleplayUser');
+        localStorage.removeItem('westRoleplayAuthToken');
       }
     }
-  }, [navigate, redirectTo]);
+
+    // Check for error in URL params
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      setError(decodeURIComponent(errorParam));
+    }
+  }, [navigate, redirectTo, searchParams]);
 
   const handleSteamLogin = async () => {
     try {

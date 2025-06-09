@@ -67,9 +67,15 @@ export const UserProvider = ({ children }) => {
   // Steam authentication functions
   const setSteamUser = (userData) => {
     try {
-      setUser(userData);
+      // Extract auth token if present
+      const { authToken, ...userDataWithoutToken } = userData;
+
+      setUser(userDataWithoutToken);
+      if (authToken) {
+        setAuthToken(authToken);
+      }
       setConnectionStatus('connected');
-      console.log('Steam user set successfully:', userData.steamId);
+      console.log('Steam user set successfully:', userDataWithoutToken.steamId);
     } catch (error) {
       console.error('Error setting Steam user:', error);
     }

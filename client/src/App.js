@@ -255,8 +255,6 @@ function AppContent() {
             {/* Public routes */}
             <Route path="/login" element={<SteamLoginPage />} />
             <Route path="/auth/steam/callback" element={<SteamCallbackPage />} />
-            <Route path="/auth/steam/success" element={<SteamCallbackPage />} />
-            <Route path="/auth/steam/error" element={<SteamCallbackPage />} />
 
             {/* Protected routes - require Steam authentication */}
             <Route path="/" element={
