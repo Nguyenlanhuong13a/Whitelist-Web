@@ -99,23 +99,53 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Database connection
-const connectDB = async () => {
+// Database connection with retry logic
+const connectDB = async (retryCount = 0) => {
+  const maxRetries = 3;
+  const retryDelay = 5000; // 5 seconds
+
   try {
     const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/whitelist-web';
-    console.log('🔄 Attempting to connect to MongoDB...');
+    console.log(`🔄 Attempting to connect to MongoDB... (Attempt ${retryCount + 1}/${maxRetries + 1})`);
     console.log('📍 MongoDB URI:', mongoURI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@')); // Hide credentials in logs
 
     await mongoose.connect(mongoURI, {
-      serverSelectionTimeoutMS: 10000, // 10 second timeout
+      serverSelectionTimeoutMS: 15000, // 15 second timeout
       socketTimeoutMS: 45000, // 45 second socket timeout
+      connectTimeoutMS: 15000, // 15 second connection timeout
+      maxPoolSize: 10, // Maintain up to 10 socket connections
+      minPoolSize: 1, // Maintain at least 1 socket connection
+      maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
+      bufferMaxEntries: 0, // Disable mongoose buffering
+      bufferCommands: false, // Disable mongoose buffering
     });
 
     console.log('✅ MongoDB connected successfully');
+
+    // Set up connection event listeners
+    mongoose.connection.on('error', (error) => {
+      console.error('❌ MongoDB connection error:', error);
+    });
+
+    mongoose.connection.on('disconnected', () => {
+      console.warn('⚠️ MongoDB disconnected');
+    });
+
+    mongoose.connection.on('reconnected', () => {
+      console.log('🔄 MongoDB reconnected');
+    });
+
     return true;
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error.message);
-    console.error('📋 Full error details:', error);
+    console.error(`❌ MongoDB connection error (Attempt ${retryCount + 1}):`, error.message);
+
+    if (retryCount < maxRetries) {
+      console.log(`🔄 Retrying connection in ${retryDelay/1000} seconds...`);
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+      return connectDB(retryCount + 1);
+    }
+
+    console.error('📋 Final connection attempt failed. Full error details:', error);
     console.log('⚠️ Server will continue without database (Discord integration will still work)');
     return false;
   }
