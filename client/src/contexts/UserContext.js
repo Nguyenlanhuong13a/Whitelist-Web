@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const UserContext = createContext();
 
@@ -46,7 +46,8 @@ export const UserProvider = ({ children }) => {
   const connectDiscord = async (code) => {
     try {
       setLoading(true);
-      
+      console.log('Starting Discord connection with code:', code ? 'present' : 'missing');
+
       const response = await fetch('/api/auth/discord/callback', {
         method: 'POST',
         headers: {
@@ -55,17 +56,40 @@ export const UserProvider = ({ children }) => {
         body: JSON.stringify({ code }),
       });
 
+      console.log('Discord callback response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to connect Discord');
+        console.error('Discord callback error response:', errorData);
+
+        // Provide more specific error messages
+        let errorMessage = 'Failed to connect Discord';
+        if (errorData.details) {
+          errorMessage = `Discord connection failed: ${errorData.details}`;
+        } else if (errorData.error) {
+          errorMessage = errorData.error;
+        }
+
+        throw new Error(errorMessage);
       }
 
       const userData = await response.json();
+      console.log('Discord connection successful, user data received:', {
+        discordId: userData.user?.discordId,
+        username: userData.user?.discordUsername
+      });
+
       setUser(userData.user);
-      
+
       return userData;
     } catch (error) {
       console.error('Discord connection error:', error);
+
+      // Enhance error message for network issues
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to server. Please check your internet connection.');
+      }
+
       throw error;
     } finally {
       setLoading(false);

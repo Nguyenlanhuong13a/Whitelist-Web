@@ -69,9 +69,22 @@ userSchema.statics.findByDiscordId = function(discordId) {
 };
 
 userSchema.statics.createFromDiscordData = function(discordData) {
+  // Handle modern Discord username format
+  let displayUsername;
+  if (discordData.global_name) {
+    // New username system: use global_name if available
+    displayUsername = discordData.global_name;
+  } else if (discordData.discriminator && discordData.discriminator !== '0') {
+    // Legacy username system: username#discriminator
+    displayUsername = `${discordData.username}#${discordData.discriminator}`;
+  } else {
+    // Modern username system without discriminator
+    displayUsername = discordData.username;
+  }
+
   return new this({
     discordId: discordData.id,
-    discordUsername: `${discordData.username}#${discordData.discriminator}`,
+    discordUsername: displayUsername,
     discordAvatar: discordData.avatar,
     email: discordData.email,
   });
