@@ -1,91 +1,79 @@
-# FiveM Whitelist Web Application
+# West Roleplay Whitelist Web Application
 
-A comprehensive web application for managing FiveM server whitelist applications with Discord integration.
+A comprehensive web application for managing West Roleplay server whitelist applications with Discord and Steam integration.
+
+## 📖 Documentation
+
+- **🇻🇳 [Hướng Dẫn Tiếng Việt](Hướng%20Dẫn.md)** - Complete Vietnamese setup guide
+- **🔒 [Security Cleanup Report](SECURITY-CLEANUP.md)** - Information about security measures
 
 ## Features
 
 - **Web Application Form**: User-friendly interface for submitting whitelist applications
-- **Discord Integration**: Automatic notifications to Discord with interactive approval/rejection buttons
+- **Discord OAuth2 Integration**: Secure Discord authentication for user identification
+- **Steam OpenID Integration**: Steam account verification and authentication
+- **Discord Bot Integration**: Automatic notifications to Discord with interactive approval/rejection buttons
 - **Rejection Reason System**: Moderators can provide detailed feedback when rejecting applications
+- **Application History**: Users can track all their application submissions and statuses
 - **Status Checking**: Real-time status checking for submitted applications with rejection reasons
 - **Role-Based Permissions**: Discord role-based access control for moderator actions
-- **Database Storage**: MongoDB integration for persistent data storage
+- **Database Storage**: MongoDB Atlas integration for persistent data storage
 - **Vietnamese Language Support**: Full Vietnamese language interface
+- **Responsive Design**: Glassmorphism design that works on all devices
 
 ## Tech Stack
 
-- **Frontend**: React.js with Tailwind CSS
+- **Frontend**: React.js 19+ with Tailwind CSS
 - **Backend**: Node.js with Express.js
-- **Database**: MongoDB with Mongoose
-- **Discord Integration**: Discord.js v14
-- **Styling**: Tailwind CSS with custom glass morphism design
+- **Database**: MongoDB Atlas with Mongoose
+- **Authentication**: Discord OAuth2 + Steam OpenID
+- **Discord Integration**: Discord.js v14 with webhooks
+- **Styling**: Tailwind CSS with custom glassmorphism design
+- **Deployment**: Railway (recommended) / Heroku / VPS
 
-## Setup Instructions
+## 🚀 Quick Start
+
+> **⚠️ Important**: This repository has been cleaned of sensitive information. You must configure your own credentials.
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- MongoDB (local or cloud instance)
-- Discord Bot Application
+- Node.js (v18.0.0 or higher)
+- npm (v8.0.0 or higher)
+- MongoDB Atlas account (recommended) or local MongoDB
+- Discord Developer Account
+- Steam Developer Account
 
-### 1. Clone and Install
+### Quick Setup
 
-```bash
-git clone <repository-url>
-cd whitelist-web
-npm run install-all
-```
+1. **Clone and Install**
+   ```bash
+   git clone https://github.com/Nguyenlanhuong13a/Whitelist-Web.git
+   cd Whitelist-Web
+   npm run install-all
+   ```
 
-### 2. Discord Bot Setup
+2. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   cp client/.env.example client/.env
+   # Edit .env files with your credentials
+   ```
 
-1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
-2. Create a new application
-3. Go to "Bot" section and create a bot
-4. Copy the bot token
-5. Enable necessary bot permissions:
-   - Send Messages
-   - Use Slash Commands
-   - Embed Links
-   - Read Message History
-6. Invite the bot to your Discord server with appropriate permissions
+3. **Start Development**
+   ```bash
+   npm run dev
+   ```
 
-### 3. Environment Configuration
+### 📚 Complete Setup Guide
 
-1. Copy `.env.example` to `.env`
-2. Fill in the required environment variables:
+For detailed setup instructions including:
+- Discord application configuration
+- Steam API setup
+- MongoDB Atlas configuration
+- Production deployment
+- Troubleshooting
 
-```env
-# Server Configuration
-NODE_ENV=development
-PORT=5000
-
-# Database Configuration
-MONGODB_URI=mongodb://localhost:27017/whitelist-web
-
-# Discord Bot Configuration
-DISCORD_BOT_TOKEN=your_discord_bot_token_here
-DISCORD_WEBHOOK_CHANNEL_ID=your_discord_channel_id_here
-```
-
-### 4. Database Setup
-
-Make sure MongoDB is running on your system or provide a cloud MongoDB URI.
-
-### 5. Start the Application
-
-For development:
-```bash
-npm run dev
-```
-
-For production:
-```bash
-npm start
-```
-
-The application will be available at:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000/api
+**👉 See the complete Vietnamese guide: [Hướng Dẫn.md](Hướng%20Dẫn.md)**
 
 ## API Endpoints
 

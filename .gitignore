@@ -5,6 +5,10 @@
 .env.test.local
 .env.production.local
 
+# Railway environment files (contain sensitive production data)
+# Note: railway.env and railway-production.env are templates with placeholders
+# Create your own .env files based on these templates
+
 # Dependencies
 node_modules/
 npm-debug.log*
