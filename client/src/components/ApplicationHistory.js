@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../contexts/UserContext';
 import './ApplicationHistory.css';
 
@@ -14,19 +14,7 @@ const ApplicationHistory = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [hasAutoSearched, setHasAutoSearched] = useState(false);
 
-  // Auto-populate search field and perform search when user is connected
-  useEffect(() => {
-    if (user?.discordId && !identifier && !hasAutoSearched) {
-      setIdentifier(user.discordId);
-      setHasAutoSearched(true);
-      // Automatically search after a short delay
-      setTimeout(() => {
-        fetchApplicationHistory(1, '');
-      }, 500);
-    }
-  }, [user, identifier, hasAutoSearched]);
-
-  const fetchApplicationHistory = async (page = 1, status = '') => {
+  const fetchApplicationHistory = useCallback(async (page = 1, status = '') => {
     if (!identifier.trim()) {
       setError('Vui lòng nhập Discord ID hoặc Steam ID');
       return;
@@ -68,7 +56,19 @@ const ApplicationHistory = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [identifier]);
+
+  // Auto-populate search field and perform search when user is connected
+  useEffect(() => {
+    if (user?.discordId && !identifier && !hasAutoSearched) {
+      setIdentifier(user.discordId);
+      setHasAutoSearched(true);
+      // Automatically search after a short delay
+      setTimeout(() => {
+        fetchApplicationHistory(1, '');
+      }, 500);
+    }
+  }, [user, identifier, hasAutoSearched, fetchApplicationHistory]);
 
   const handleSearch = (e) => {
     e.preventDefault();
