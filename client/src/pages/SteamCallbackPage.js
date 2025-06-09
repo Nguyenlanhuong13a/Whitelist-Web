@@ -193,7 +193,6 @@ function SteamCallbackPage() {
             throw new Error('Dữ liệu người dùng không hợp lệ');
           }
         }
-        }
 
         // Check for error
         const errorMessage = searchParams.get('error');
