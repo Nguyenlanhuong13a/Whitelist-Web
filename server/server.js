@@ -7,6 +7,21 @@ const path = require('path');
 // Load environment variables from parent directory
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
+// Validate critical environment variables for Discord OAuth
+const validateDiscordConfig = () => {
+  const requiredVars = ['DISCORD_CLIENT_ID', 'DISCORD_CLIENT_SECRET'];
+  const missingVars = requiredVars.filter(varName => !process.env[varName]);
+
+  if (missingVars.length > 0) {
+    console.warn('⚠️ Missing Discord OAuth environment variables:', missingVars.join(', '));
+    console.warn('Discord OAuth functionality may not work properly');
+  } else {
+    console.log('✅ Discord OAuth configuration validated');
+  }
+};
+
+validateDiscordConfig();
+
 // Import routes
 const applicationRoutes = require('./routes/applications');
 const discordRoutes = require('./routes/discord');
@@ -22,9 +37,9 @@ const PORT = process.env.PORT || 5000;
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production'
     ? [
-        'https://westroleplay.net',
+        'https://whitelistweb.up.railway.app', // Primary production domain
+        'https://westroleplay.net', // Future custom domain
         'https://www.westroleplay.net',
-        'https://whitelistweb.up.railway.app', // Keep Railway URL for transition period
         process.env.FRONTEND_URL,
         process.env.RAILWAY_STATIC_URL,
         process.env.RENDER_EXTERNAL_URL

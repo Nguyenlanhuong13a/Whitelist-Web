@@ -158,15 +158,26 @@ router.get('/user/:discordId', async (req, res) => {
 // GET /api/auth/discord/config - Get Discord OAuth configuration
 router.get('/discord/config', (req, res) => {
   try {
+    // Validate that required Discord configuration is available
+    if (!DISCORD_CLIENT_ID) {
+      console.error('Discord config error: DISCORD_CLIENT_ID is not set');
+      return res.status(500).json({
+        error: 'Discord configuration is not properly set up',
+        details: 'DISCORD_CLIENT_ID environment variable is missing'
+      });
+    }
+
     res.json({
       clientId: DISCORD_CLIENT_ID,
       redirectUri: DISCORD_REDIRECT_URI,
       scope: 'identify email',
+      configured: true
     });
   } catch (error) {
     console.error('Discord config error:', error);
     res.status(500).json({
       error: 'Internal server error',
+      configured: false
     });
   }
 });

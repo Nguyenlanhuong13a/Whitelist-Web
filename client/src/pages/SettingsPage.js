@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
+import { getDiscordConfig, generateDiscordOAuthUrl } from '../utils/discordConfig';
 
 function SettingsPage() {
   const { user, connectDiscord, disconnectDiscord, loading } = useUser();
@@ -12,17 +13,16 @@ function SettingsPage() {
       setIsConnecting(true);
       setError('');
       setSuccess('');
-      
-      // Redirect to Discord OAuth
-      const clientId = process.env.REACT_APP_DISCORD_CLIENT_ID;
-      const redirectUri = encodeURIComponent(`${window.location.origin}/auth/discord/callback`);
-      const scope = encodeURIComponent('identify');
-      
-      const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
-      
+
+      // Get Discord configuration using utility function
+      const config = await getDiscordConfig();
+      const discordAuthUrl = generateDiscordOAuthUrl(config.clientId, config.redirectUri, config.scope);
+
+      console.log('Redirecting to Discord OAuth with client ID:', config.clientId);
       window.location.href = discordAuthUrl;
     } catch (err) {
-      setError('Không thể kết nối với Discord. Vui lòng thử lại.');
+      console.error('Discord connection error:', err);
+      setError(err.message || 'Không thể kết nối với Discord. Vui lòng thử lại.');
       setIsConnecting(false);
     }
   };

@@ -1,7 +1,7 @@
 {
-  "name": "fivem-whitelist",
+  "name": "west-roleplay-whitelist",
   "version": "1.0.0",
-  "description": "FiveM Whitelist Registration System",
+  "description": "West Roleplay Whitelist Application - Production Ready",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
@@ -13,19 +13,27 @@
     "build": "cd client && npm install && npm run build",
     "postbuild": "npm install --only=production",
     "heroku-postbuild": "npm run build",
-    "railway-build": "npm install && cd client && npm install && npm run build"
+    "railway-build": "npm install && cd client && npm install && REACT_APP_DISCORD_CLIENT_ID=$REACT_APP_DISCORD_CLIENT_ID npm run build"
   },
   "keywords": [
-    "fivem",
+    "roleplay",
     "whitelist",
-    "registration"
+    "discord",
+    "mongodb",
+    "express",
+    "react"
   ],
-  "author": "",
+  "author": "West Roleplay Team",
   "license": "MIT",
   "engines": {
-    "node": ">=16.0.0",
+    "node": ">=18.0.0",
     "npm": ">=8.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nguyenlanhuong13a/Whitelist-Web.git"
+  },
+  "homepage": "https://westroleplay.net",
   "dependencies": {
     "axios": "^1.9.0",
     "bcryptjs": "^2.4.3",

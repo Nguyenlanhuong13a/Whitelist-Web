@@ -2,8 +2,8 @@
 
 ## 🚀 West Roleplay Whitelist - Railway Production Deployment
 
-### **Production URL:** https://westroleplay.net
-### **Railway URL (Backup):** https://whitelistweb.up.railway.app
+### **Production URL:** https://whitelistweb.up.railway.app
+### **Railway Domain:** https://whitelistweb.up.railway.app
 
 ## 📋 **Environment Variables for Railway**
 
@@ -38,7 +38,7 @@ DISCORD_CLIENT_SECRET=S6inGJZL4-MaItsjxb_qkjUjv1E0VPCq
 DISCORD_REDIRECT_URI=https://westroleplay.net/auth/discord/callback
 
 # Frontend Configuration
-FRONTEND_URL=https://westroleplay.net
+FRONTEND_URL=https://whitelistweb.up.railway.app
 REACT_APP_DISCORD_CLIENT_ID=1381383646791073892
 
 # Optional Configuration
@@ -55,15 +55,13 @@ JWT_SECRET=your_jwt_secret_here_change_in_production
 3. Navigate to **OAuth2** tab
 4. In **Redirects** section, add:
    ```
-   https://westroleplay.net/auth/discord/callback
    https://whitelistweb.up.railway.app/auth/discord/callback
    ```
 5. Save changes
 
 ### **OAuth2 URLs:**
 - **Development:** `http://localhost:3000/auth/discord/callback`
-- **Production:** `https://westroleplay.net/auth/discord/callback`
-- **Railway Backup:** `https://whitelistweb.up.railway.app/auth/discord/callback`
+- **Production:** `https://whitelistweb.up.railway.app/auth/discord/callback`
 
 ## 📦 **Deployment Steps**
 

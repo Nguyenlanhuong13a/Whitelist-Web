@@ -12,5 +12,8 @@ cmds = [
   'cd client && npm run build'
 ]
 
+[variables]
+REACT_APP_DISCORD_CLIENT_ID = '1381383646791073892'
+
 [start]
 cmd = 'npm start'
