@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function SteamLoginPage() {
@@ -7,9 +7,9 @@ function SteamLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Get the intended destination from URL params
-  const searchParams = new URLSearchParams(location.search);
-  const redirectTo = searchParams.get('redirect') || '/';
+  // Get the intended destination from URL params - memoized to prevent useEffect dependency issues
+  const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const redirectTo = useMemo(() => searchParams.get('redirect') || '/', [searchParams]);
 
   useEffect(() => {
     // Check if user is already authenticated

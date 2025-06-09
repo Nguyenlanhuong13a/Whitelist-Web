@@ -95,14 +95,14 @@ router.get('/steam/callback', async (req, res) => {
     };
 
     // Redirect to frontend with session data
-    const frontendUrl = `${FRONTEND_URL}/auth/steam/success?data=${encodeURIComponent(JSON.stringify(sessionData))}`;
+    const frontendUrl = `${FRONTEND_URL}/auth/steam/callback?data=${encodeURIComponent(JSON.stringify(sessionData))}`;
     res.redirect(frontendUrl);
 
   } catch (error) {
     console.error('Steam authentication callback error:', error);
 
     // Redirect to frontend with error
-    const errorUrl = `${FRONTEND_URL}/auth/steam/error?message=${encodeURIComponent(error.message)}`;
+    const errorUrl = `${FRONTEND_URL}/auth/steam/callback?error=${encodeURIComponent(error.message)}`;
     res.redirect(errorUrl);
   }
 });

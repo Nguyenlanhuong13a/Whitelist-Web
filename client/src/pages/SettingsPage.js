@@ -103,7 +103,7 @@ function SettingsPage() {
       window.history.replaceState({}, document.title, window.location.pathname);
       return;
     }
-  }, []);
+  }, [user?.discordId]);
 
   return (
     <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
