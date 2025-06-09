@@ -10,9 +10,33 @@ const router = express.Router();
 const STEAM_API_KEY = process.env.STEAM_API_KEY;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
+console.log('Steam Auth Configuration:');
+console.log('- STEAM_API_KEY:', STEAM_API_KEY ? 'Set' : 'Missing');
+console.log('- FRONTEND_URL:', FRONTEND_URL);
+console.log('- Return URL:', `${FRONTEND_URL}/auth/steam/callback`);
+
+if (!STEAM_API_KEY) {
+  console.error('CRITICAL: STEAM_API_KEY is not set in environment variables');
+}
+
+// Determine the correct backend URL for Steam callback
+const getBackendUrl = () => {
+  if (process.env.NODE_ENV === 'production') {
+    // In production, use the same domain as frontend but point to API
+    return FRONTEND_URL.replace(/\/$/, '') + '/api';
+  } else {
+    // In development, use localhost with backend port
+    return 'http://localhost:5000/api';
+  }
+};
+
+const BACKEND_URL = getBackendUrl();
+console.log('- BACKEND_URL:', BACKEND_URL);
+console.log('- Steam Return URL:', `${BACKEND_URL}/auth/steam/callback`);
+
 const steam = new SteamAuth({
   realm: FRONTEND_URL, // Site name displayed to users on logon
-  returnUrl: `${FRONTEND_URL}/auth/steam/callback`, // Your return route
+  returnUrl: `${BACKEND_URL}/auth/steam/callback`, // Backend API route for processing
   apiKey: STEAM_API_KEY, // Steam API key
 });
 
@@ -50,14 +74,35 @@ router.get('/steam/callback', async (req, res) => {
     console.log('Request headers:', req.headers);
 
     // Check if we have the required OpenID parameters
-    if (!req.query['openid.mode']) {
-      throw new Error('Missing OpenID parameters in callback');
+    const requiredParams = ['openid.mode', 'openid.ns', 'openid.op_endpoint'];
+    const missingParams = requiredParams.filter(param => !req.query[param]);
+
+    if (missingParams.length > 0) {
+      console.error('Missing required OpenID parameters:', missingParams);
+      throw new Error(`Missing OpenID parameters: ${missingParams.join(', ')}`);
+    }
+
+    // Validate OpenID mode
+    if (req.query['openid.mode'] !== 'id_res') {
+      console.error('Invalid OpenID mode:', req.query['openid.mode']);
+      throw new Error('Invalid OpenID response mode');
     }
 
     // Authenticate user with Steam
+    console.log('Attempting Steam authentication...');
     const user = await steam.authenticate(req);
     console.log('Steam authentication successful:', user);
     console.log('Steam ID:', user.steamid);
+
+    // Validate user data
+    if (!user || !user.steamid) {
+      throw new Error('Steam authentication failed - no user data received');
+    }
+
+    // Validate Steam ID format (should be 17 digits)
+    if (!/^\d{17}$/.test(user.steamid)) {
+      throw new Error('Invalid Steam ID format received');
+    }
 
     // Find or create user in database
     let dbUser = await User.findOne({ steamId: user.steamid });
@@ -447,7 +492,7 @@ router.get('/steam/config', (_req, res) => {
 
     res.json({
       realm: FRONTEND_URL,
-      returnUrl: `${FRONTEND_URL}/auth/steam/callback`,
+      returnUrl: `${BACKEND_URL}/auth/steam/callback`,
       configured: true
     });
   } catch (error) {
