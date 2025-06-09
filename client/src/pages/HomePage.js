@@ -12,7 +12,7 @@ function HomePage() {
               <img
                 src="/west-logo.png"
                 alt="West Roleplay Logo"
-                className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 object-contain animate-bounce-subtle"
+                className="w-20 h-20 sm:w-24 sm:h-24 md:w-26 md:h-26 object-contain animate-bounce-subtle"
               />
               <div className="text-left">
                 <h1 className="text-5xl md:text-7xl font-display font-bold bg-gradient-to-r from-primary-400 via-secondary-400 to-primary-400 bg-clip-text text-transparent">

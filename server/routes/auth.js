@@ -46,10 +46,18 @@ router.get('/steam/callback', async (req, res) => {
   try {
     console.log('Processing Steam authentication callback');
     console.log('Query parameters:', req.query);
+    console.log('Request URL:', req.url);
+    console.log('Request headers:', req.headers);
+
+    // Check if we have the required OpenID parameters
+    if (!req.query['openid.mode']) {
+      throw new Error('Missing OpenID parameters in callback');
+    }
 
     // Authenticate user with Steam
     const user = await steam.authenticate(req);
-    console.log('Steam authentication successful:', user.steamid);
+    console.log('Steam authentication successful:', user);
+    console.log('Steam ID:', user.steamid);
 
     // Find or create user in database
     let dbUser = await User.findOne({ steamId: user.steamid });
@@ -101,8 +109,23 @@ router.get('/steam/callback', async (req, res) => {
   } catch (error) {
     console.error('Steam authentication callback error:', error);
 
+    // Provide more specific error messages in Vietnamese
+    let errorMessage = 'Xác thực Steam thất bại';
+
+    if (error.message.includes('Invalid or replayed nonce')) {
+      errorMessage = 'Phiên đăng nhập Steam đã hết hạn. Vui lòng thử lại.';
+    } else if (error.message.includes('Missing OpenID parameters')) {
+      errorMessage = 'Thiếu thông tin xác thực từ Steam. Vui lòng thử lại.';
+    } else if (error.message.includes('Invalid signature')) {
+      errorMessage = 'Chữ ký xác thực Steam không hợp lệ. Vui lòng thử lại.';
+    } else if (error.message.includes('timeout')) {
+      errorMessage = 'Kết nối với Steam bị timeout. Vui lòng kiểm tra mạng và thử lại.';
+    } else if (error.message.includes('network')) {
+      errorMessage = 'Không thể kết nối với Steam. Vui lòng kiểm tra kết nối mạng.';
+    }
+
     // Redirect to frontend with error
-    const errorUrl = `${FRONTEND_URL}/auth/steam/callback?error=${encodeURIComponent(error.message)}`;
+    const errorUrl = `${FRONTEND_URL}/auth/steam/callback?error=${encodeURIComponent(errorMessage)}`;
     res.redirect(errorUrl);
   }
 });

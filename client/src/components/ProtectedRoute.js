@@ -39,7 +39,7 @@ function ProtectedRoute({ children }) {
             <img
               src="/west-logo.png"
               alt="West Roleplay Logo"
-              className="w-16 h-16 mx-auto mb-4"
+              className="w-12 h-12 mx-auto mb-4"
             />
             <h1 className="text-2xl font-bold text-white mb-2">West Roleplay</h1>
           </div>

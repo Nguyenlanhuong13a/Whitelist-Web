@@ -86,7 +86,7 @@ function SteamLoginPage() {
             <img
               src="/west-logo.png"
               alt="West Roleplay Logo"
-              className="w-20 h-20 mx-auto mb-6"
+              className="w-16 h-16 mx-auto mb-6"
             />
             <h1 className="text-3xl font-bold text-white mb-2">West Roleplay</h1>
             <p className="text-gray-400">Whitelist Registration System</p>

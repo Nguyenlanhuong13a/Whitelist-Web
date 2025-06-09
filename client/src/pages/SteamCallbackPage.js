@@ -54,24 +54,28 @@ function SteamCallbackPage() {
         if (errorMessage) {
           console.error('Steam authentication failed:', errorMessage);
           setStatus('error');
-          setMessage(`Đăng nhập Steam thất bại: ${decodeURIComponent(errorMessage)}`);
+          const decodedError = decodeURIComponent(errorMessage);
+          setMessage(decodedError);
 
           // Redirect to login page after delay
           setTimeout(() => {
-            navigate('/login?error=' + encodeURIComponent(errorMessage));
-          }, 3000);
+            navigate('/login?error=' + encodeURIComponent(decodedError));
+          }, 4000);
 
           return;
         }
         
         // No data or error found, this shouldn't happen
         console.error('Steam callback: No data or error found in URL');
+        console.log('Current URL:', window.location.href);
+        console.log('Search params:', Object.fromEntries(searchParams.entries()));
+
         setStatus('error');
-        setMessage('Không tìm thấy dữ liệu xác thực. Vui lòng thử lại.');
-        
+        setMessage('Không tìm thấy dữ liệu xác thực từ Steam. Có thể do phiên đăng nhập đã hết hạn hoặc bị gián đoạn. Vui lòng thử đăng nhập lại.');
+
         setTimeout(() => {
-          navigate('/login');
-        }, 3000);
+          navigate('/login?error=' + encodeURIComponent('Phiên đăng nhập Steam bị gián đoạn'));
+        }, 4000);
         
       } catch (error) {
         console.error('Steam callback processing error:', error);
@@ -133,7 +137,7 @@ function SteamCallbackPage() {
             <img
               src="/west-logo.png"
               alt="West Roleplay Logo"
-              className="w-16 h-16 mx-auto mb-4"
+              className="w-12 h-12 mx-auto mb-4"
             />
             <h1 className="text-2xl font-bold text-white mb-2">Steam Authentication</h1>
           </div>

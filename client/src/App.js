@@ -112,7 +112,7 @@ function AppContent() {
               <img
                 src="/west-logo.png"
                 alt="West Roleplay Logo"
-                className="w-14 h-14 sm:w-16 sm:h-16 object-contain"
+                className="w-12 h-12 sm:w-14 sm:h-14 object-contain"
               />
               <div>
                 <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent">
