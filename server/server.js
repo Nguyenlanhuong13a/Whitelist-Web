@@ -52,10 +52,27 @@ app.use('/api/auth', authRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  const dbStatus = mongoose.connection.readyState;
+  const dbStatusText = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting'
+  }[dbStatus] || 'unknown';
+
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    database: {
+      status: dbStatusText,
+      readyState: dbStatus,
+      connected: dbStatus === 1
+    },
+    discord: {
+      botConnected: discordBot.isConnected(),
+      webhookConfigured: !!process.env.DISCORD_WEBHOOK_URL
+    }
   });
 });
 

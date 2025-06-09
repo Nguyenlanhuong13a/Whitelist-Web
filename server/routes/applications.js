@@ -61,6 +61,15 @@ const validateApplication = [
 // POST /api/applications - Submit new application
 router.post('/', validateApplication, async (req, res) => {
   try {
+    // Check database connection first
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        error: 'Database not connected',
+        message: 'Không thể kết nối đến cơ sở dữ liệu. Vui lòng thử lại sau.'
+      });
+    }
+
     // Check validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -158,6 +167,15 @@ router.post('/', validateApplication, async (req, res) => {
 // GET /api/applications/status/:discordId - Check application status
 router.get('/status/:discordId', async (req, res) => {
   try {
+    // Check database connection
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        error: 'Database not connected',
+        message: 'Không thể kết nối đến cơ sở dữ liệu. Vui lòng thử lại sau.'
+      });
+    }
+
     const { discordId } = req.params;
 
     if (!discordId) {
@@ -308,6 +326,15 @@ router.get('/stats', async (req, res) => {
 // GET /api/applications - Get all applications (admin only, with pagination)
 router.get('/', async (req, res) => {
   try {
+    // Check database connection
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        error: 'Database not connected',
+        message: 'Cơ sở dữ liệu chưa được kết nối. Vui lòng thử lại sau.'
+      });
+    }
+
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const status = req.query.status;

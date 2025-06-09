@@ -10,19 +10,26 @@ Set these environment variables in your Railway project dashboard:
 
 ### **Required Environment Variables:**
 
+**CRITICAL: Set these EXACT values in Railway dashboard:**
+
 ```env
 # Server Configuration
 NODE_ENV=production
 PORT=5000
 
 # Database Configuration
-MONGODB_URI=your_mongodb_connection_string_here
+MONGODB_URI=mongodb+srv://whitelistweb:baudeveloper@cluster0.mooze8v.mongodb.net/whitelist-web?retryWrites=true&w=majority&appName=Cluster0
 
 # Discord Bot Configuration
-DISCORD_BOT_TOKEN=MTM4MTM4MzY0Njc5MTA3Mzg5Mg.GzTv77.your_bot_token_here
-DISCORD_WEBHOOK_CHANNEL_ID=your_discord_channel_id_here
+DISCORD_BOT_TOKEN=MTM4MTM4MzY0Njc5MTA3Mzg5Mg.GzTv77.7GGfJ9YFcWnQA-hUGBuyYByxpslhDGNqJQcMIg
+DISCORD_WEBHOOK_CHANNEL_ID=1379909131028271174
 DISCORD_MODERATOR_ROLE_ID=1381400664399413299
-DISCORD_WEBHOOK_URL=your_webhook_url_here
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/1381393433914118214/3o07C9O1e_rBup3lnlqsiKT5UAel_hhrHDrk6vda66D763TnWti8wV_qdHOWGgB6B_LY
+
+# Discord Application Configuration
+DISCORD_APPLICATION_ID=1381383646791073892
+DISCORD_GUILD_ID=1379896680123601018
+DISCORD_PUBLIC_KEY=3cd52b2363a175216af63397beaf8a630f252ab048733414f5d2ffc52fabe6e6
 
 # Discord OAuth Configuration (Production)
 DISCORD_CLIENT_ID=1381383646791073892
@@ -30,11 +37,12 @@ DISCORD_CLIENT_SECRET=S6inGJZL4-MaItsjxb_qkjUjv1E0VPCq
 DISCORD_REDIRECT_URI=https://whitelistweb.up.railway.app/auth/discord/callback
 
 # Frontend Configuration
+FRONTEND_URL=https://whitelistweb.up.railway.app
 REACT_APP_DISCORD_CLIENT_ID=1381383646791073892
 
 # Optional Configuration
 DEMO_MODE=false
-FRONTEND_URL=https://whitelistweb.up.railway.app
+JWT_SECRET=your_jwt_secret_here_change_in_production
 ```
 
 ## 🔧 **Discord OAuth Configuration**
