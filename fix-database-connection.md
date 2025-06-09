@@ -12,10 +12,10 @@
 Đăng nhập vào Railway Dashboard và cập nhật biến môi trường với credentials CHÍNH XÁC:
 
 ```env
-MONGODB_URI=mongodb+srv://whitelisted:baudeveloper@cluster0.mooze8v.mongodb.net/whitelist-web?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_URI=mongodb+srv://whitelistweb:baudeveloper@cluster0.mooze8v.mongodb.net/whitelist-web?retryWrites=true&w=majority&appName=Cluster0
 ```
 
-**LƯU Ý:** Sử dụng chính xác username `whitelisted` và password `baudeveloper` như đã cung cấp.
+**LƯU Ý:** Sử dụng chính xác username `whitelistweb` và password `baudeveloper` như đã cập nhật.
 
 ### **Bước 2: Kiểm Tra MongoDB Atlas**
 
@@ -27,7 +27,7 @@ MONGODB_URI=mongodb+srv://whitelisted:baudeveloper@cluster0.mooze8v.mongodb.net/
 
 3. **Kiểm tra Database User:**
    - Vào **Database Access** tab
-   - Đảm bảo user `whitelisted` tồn tại với password `baudeveloper`
+   - Đảm bảo user `whitelistweb` tồn tại với password `baudeveloper`
    - Quyền: `Read and write to any database`
 
 ### **Bước 3: Test Connection String**
@@ -37,7 +37,7 @@ Chạy lệnh test này để kiểm tra connection:
 ```bash
 node -e "
 const mongoose = require('mongoose');
-const uri = 'mongodb+srv://whitelisted:baudeveloper@cluster0.mooze8v.mongodb.net/whitelist-web?retryWrites=true&w=majority&appName=Cluster0';
+const uri = 'mongodb+srv://whitelistweb:baudeveloper@cluster0.mooze8v.mongodb.net/whitelist-web?retryWrites=true&w=majority&appName=Cluster0';
 mongoose.connect(uri)
   .then(() => {
     console.log('✅ Connection successful!');

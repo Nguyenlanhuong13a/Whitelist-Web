@@ -31,13 +31,13 @@ MONGODB_URI=mongodb+srv://whitelisted:baudeveloper@cluster0.mooze8v.mongodb.net/
 #### **B. Database User Verification:**
 1. Go to **Database Access** tab
 2. Verify user exists:
-   - **Username:** `whitelisted`
+   - **Username:** `whitelistweb`
    - **Password:** `baudeveloper`
    - **Database User Privileges:** `Read and write to any database`
 3. If user doesn't exist, create it:
    - Click **"Add New Database User"**
    - Authentication Method: **Password**
-   - Username: `whitelisted`
+   - Username: `whitelistweb`
    - Password: `baudeveloper`
    - Database User Privileges: **Built-in Role** → `Read and write to any database`
 
@@ -52,7 +52,7 @@ MONGODB_URI=mongodb+srv://whitelisted:baudeveloper@cluster0.mooze8v.mongodb.net/
 ```env
 NODE_ENV=production
 PORT=5000
-MONGODB_URI=mongodb+srv://whitelisted:baudeveloper@cluster0.mooze8v.mongodb.net/whitelist-web?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_URI=mongodb+srv://whitelistweb:baudeveloper@cluster0.mooze8v.mongodb.net/whitelist-web?retryWrites=true&w=majority&appName=Cluster0
 DISCORD_BOT_TOKEN=MTM4MTM4MzY0Njc5MTA3Mzg5Mg.GzTv77.7GGfJ9YFcWnQA-hUGBuyYByxpslhDGNqJQcMIg
 DISCORD_CLIENT_ID=1381383646791073892
 DISCORD_CLIENT_SECRET=S6inGJZL4-MaItsjxb_qkjUjv1E0VPCq
@@ -99,7 +99,7 @@ https://westroleplay.net/api/health
    - Role: `Read and write to any database`
 3. Update Railway with:
    ```env
-   MONGODB_URI=mongodb+srv://railwayuser:railway2024@cluster0.mooze8v.mongodb.net/whitelist-web?retryWrites=true&w=majority&appName=Cluster0
+   MONGODB_URI=mongodb+srv://whitelistweb:baudeveloper@cluster0.mooze8v.mongodb.net/whitelist-web?retryWrites=true&w=majority&appName=Cluster0
    ```
 
 #### **Option 2: Check Cluster Region**

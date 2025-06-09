@@ -7,12 +7,12 @@
 
 const mongoose = require('mongoose');
 
-// Connection string with correct credentials
-const MONGODB_URI = 'mongodb+srv://whitelisted:baudeveloper@cluster0.mooze8v.mongodb.net/whitelist-web?retryWrites=true&w=majority&appName=Cluster0';
+// Connection string with updated credentials
+const MONGODB_URI = 'mongodb+srv://whitelistweb:baudeveloper@cluster0.mooze8v.mongodb.net/whitelist-web?retryWrites=true&w=majority&appName=Cluster0';
 
 console.log('🔄 Testing MongoDB Atlas Connection...');
 console.log('📍 URI:', MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@'));
-console.log('👤 Username: whitelisted');
+console.log('👤 Username: whitelistweb');
 console.log('🏷️ Database: whitelist-web');
 console.log('🌐 Cluster: cluster0.mooze8v.mongodb.net');
 
@@ -62,6 +62,9 @@ async function testConnection() {
     console.log('\n🎉 All tests passed! MongoDB connection is working correctly.');
     console.log('\n📋 Railway Environment Variable:');
     console.log('MONGODB_URI=' + MONGODB_URI);
+    console.log('\n🔄 Updated Credentials:');
+    console.log('   Username: whitelistweb (changed from whitelisted)');
+    console.log('   Password: baudeveloper (unchanged)');
 
   } catch (error) {
     console.error('\n❌ MongoDB connection failed!');
