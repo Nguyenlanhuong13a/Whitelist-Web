@@ -2,7 +2,8 @@
 
 ## 🚀 West Roleplay Whitelist - Railway Production Deployment
 
-### **Production URL:** https://whitelistweb.up.railway.app
+### **Production URL:** https://westroleplay.net
+### **Railway URL (Backup):** https://whitelistweb.up.railway.app
 
 ## 📋 **Environment Variables for Railway**
 
@@ -34,10 +35,10 @@ DISCORD_PUBLIC_KEY=3cd52b2363a175216af63397beaf8a630f252ab048733414f5d2ffc52fabe
 # Discord OAuth Configuration (Production)
 DISCORD_CLIENT_ID=1381383646791073892
 DISCORD_CLIENT_SECRET=S6inGJZL4-MaItsjxb_qkjUjv1E0VPCq
-DISCORD_REDIRECT_URI=https://whitelistweb.up.railway.app/auth/discord/callback
+DISCORD_REDIRECT_URI=https://westroleplay.net/auth/discord/callback
 
 # Frontend Configuration
-FRONTEND_URL=https://whitelistweb.up.railway.app
+FRONTEND_URL=https://westroleplay.net
 REACT_APP_DISCORD_CLIENT_ID=1381383646791073892
 
 # Optional Configuration
@@ -54,13 +55,15 @@ JWT_SECRET=your_jwt_secret_here_change_in_production
 3. Navigate to **OAuth2** tab
 4. In **Redirects** section, add:
    ```
+   https://westroleplay.net/auth/discord/callback
    https://whitelistweb.up.railway.app/auth/discord/callback
    ```
 5. Save changes
 
 ### **OAuth2 URLs:**
 - **Development:** `http://localhost:3000/auth/discord/callback`
-- **Production:** `https://whitelistweb.up.railway.app/auth/discord/callback`
+- **Production:** `https://westroleplay.net/auth/discord/callback`
+- **Railway Backup:** `https://whitelistweb.up.railway.app/auth/discord/callback`
 
 ## 📦 **Deployment Steps**
 
@@ -86,12 +89,12 @@ JWT_SECRET=your_jwt_secret_here_change_in_production
 ## 🔍 **Testing Production Deployment**
 
 ### **1. Basic Functionality:**
-- Visit: https://whitelistweb.up.railway.app
+- Visit: https://westroleplay.net
 - Test navigation between pages
 - Verify responsive design
 
 ### **2. Discord OAuth Integration:**
-- Go to Settings page: https://whitelistweb.up.railway.app/settings
+- Go to Settings page: https://westroleplay.net/settings
 - Click "Kết nối Discord"
 - Complete OAuth flow
 - Verify Discord ID auto-population
@@ -106,8 +109,9 @@ JWT_SECRET=your_jwt_secret_here_change_in_production
 ### **Common Issues:**
 
 #### **1. OAuth Redirect Mismatch:**
-- Ensure Discord redirect URI matches exactly: `https://whitelistweb.up.railway.app/auth/discord/callback`
+- Ensure Discord redirect URI matches exactly: `https://westroleplay.net/auth/discord/callback`
 - Check environment variable: `DISCORD_REDIRECT_URI`
+- Backup URI: `https://whitelistweb.up.railway.app/auth/discord/callback`
 
 #### **2. Database Connection:**
 - Verify `MONGODB_URI` is correctly set
@@ -154,14 +158,15 @@ JWT_SECRET=your_jwt_secret_here_change_in_production
 ✅ **Responsive Design** - Mobile and desktop support  
 ✅ **Vietnamese Language** - Complete localization  
 
-## 🎯 **Production URL**
+## 🎯 **Production URLs**
 
-**Main Application:** https://whitelistweb.up.railway.app
+**Main Application:** https://westroleplay.net
+**Railway Backup:** https://whitelistweb.up.railway.app
 
 **Key Pages:**
-- Home: https://whitelistweb.up.railway.app/
-- Settings: https://whitelistweb.up.railway.app/settings
-- Status: https://whitelistweb.up.railway.app/status
-- History: https://whitelistweb.up.railway.app/history
-- Rules: https://whitelistweb.up.railway.app/rules
-- About: https://whitelistweb.up.railway.app/about
+- Home: https://westroleplay.net/
+- Settings: https://westroleplay.net/settings
+- Status: https://westroleplay.net/status
+- History: https://westroleplay.net/history
+- Rules: https://westroleplay.net/rules
+- About: https://westroleplay.net/about

@@ -85,7 +85,7 @@ DEMO_MODE=true
 - [ ] `NODE_ENV=production`
 - [ ] `MONGODB_URI` đã được cập nhật
 - [ ] `DISCORD_BOT_TOKEN` đã được set
-- [ ] `FRONTEND_URL=https://whitelistweb.up.railway.app`
+- [ ] `FRONTEND_URL=https://westroleplay.net`
 
 ### ✅ **MongoDB Atlas:**
 - [ ] Network Access: `0.0.0.0/0` allowed
@@ -101,7 +101,7 @@ DEMO_MODE=true
 
 1. **Test Health Endpoint:**
    ```
-   https://whitelistweb.up.railway.app/api/health
+   https://westroleplay.net/api/health
    ```
    Kết quả mong đợi:
    ```json
@@ -115,7 +115,7 @@ DEMO_MODE=true
    ```
 
 2. **Test Form Submission:**
-   - Vào trang chủ: https://whitelistweb.up.railway.app
+   - Vào trang chủ: https://westroleplay.net
    - Điền form và submit
    - Không còn lỗi "Không thể kết nối đến cơ sở dữ liệu"
 

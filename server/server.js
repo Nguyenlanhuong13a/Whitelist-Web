@@ -22,7 +22,9 @@ const PORT = process.env.PORT || 5000;
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production'
     ? [
-        'https://whitelistweb.up.railway.app',
+        'https://westroleplay.net',
+        'https://www.westroleplay.net',
+        'https://whitelistweb.up.railway.app', // Keep Railway URL for transition period
         process.env.FRONTEND_URL,
         process.env.RAILWAY_STATIC_URL,
         process.env.RENDER_EXTERNAL_URL

@@ -67,7 +67,7 @@ Your bot needs the following permissions:
 
 1. In your Discord application, go to the "OAuth2" section
 2. Under "Redirects", add: `http://localhost:3000/auth/discord/callback`
-3. For production, also add your production URL: `https://whitelistweb.up.railway.app/auth/discord/callback`
+3. For production, also add your production URL: `https://westroleplay.net/auth/discord/callback`
 4. Under "OAuth2 URL Generator":
    - Select scopes: `identify` and `email`
    - Copy the Client ID and Client Secret
@@ -85,7 +85,7 @@ DISCORD_MODERATOR_ROLE_ID=your_moderator_role_id_here
 # Discord OAuth Configuration (for Settings page)
 DISCORD_CLIENT_ID=your_discord_client_id_here
 DISCORD_CLIENT_SECRET=your_discord_client_secret_here
-DISCORD_REDIRECT_URI=https://whitelistweb.up.railway.app/auth/discord/callback
+DISCORD_REDIRECT_URI=https://westroleplay.net/auth/discord/callback
 ```
 
 Add these to your `client/.env` file:

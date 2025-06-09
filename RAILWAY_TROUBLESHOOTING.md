@@ -27,7 +27,8 @@ The form submission error "Có lỗi xảy ra khi gửi đơn đăng ký" occurs
 ## 🔍 **Diagnostic Steps**
 
 ### **1. Check Application Health**
-Visit: https://whitelistweb.up.railway.app/api/health
+Visit: https://westroleplay.net/api/health
+Backup: https://whitelistweb.up.railway.app/api/health
 
 **Expected Response (After Latest Deployment):**
 ```json
@@ -93,7 +94,7 @@ In Railway dashboard, verify these variables are set:
 | `DISCORD_BOT_TOKEN` | `MTM4...` | ✅ Required |
 | `DISCORD_CLIENT_ID` | `1381383646791073892` | ✅ Required |
 | `DISCORD_CLIENT_SECRET` | `S6inGJZL...` | ✅ Required |
-| `FRONTEND_URL` | `https://whitelistweb.up.railway.app` | ✅ Required |
+| `FRONTEND_URL` | `https://westroleplay.net` | ✅ Required |
 
 ### **2. Build Process Verification**
 - ✅ Build completes successfully (no PostCSS/Tailwind errors)
@@ -134,10 +135,10 @@ mongoose.connect('your_mongodb_uri')
 ### **Test API Endpoints:**
 ```bash
 # Health check
-curl https://whitelistweb.up.railway.app/api/health
+curl https://westroleplay.net/api/health
 
 # Applications endpoint (should return database error if not connected)
-curl https://whitelistweb.up.railway.app/api/applications
+curl https://westroleplay.net/api/applications
 ```
 
 ## 🎯 **Expected Resolution Timeline**

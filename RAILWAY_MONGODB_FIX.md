@@ -56,8 +56,8 @@ MONGODB_URI=mongodb+srv://whitelisted:baudeveloper@cluster0.mooze8v.mongodb.net/
 DISCORD_BOT_TOKEN=MTM4MTM4MzY0Njc5MTA3Mzg5Mg.GzTv77.7GGfJ9YFcWnQA-hUGBuyYByxpslhDGNqJQcMIg
 DISCORD_CLIENT_ID=1381383646791073892
 DISCORD_CLIENT_SECRET=S6inGJZL4-MaItsjxb_qkjUjv1E0VPCq
-DISCORD_REDIRECT_URI=https://whitelistweb.up.railway.app/auth/discord/callback
-FRONTEND_URL=https://whitelistweb.up.railway.app
+DISCORD_REDIRECT_URI=https://westroleplay.net/auth/discord/callback
+FRONTEND_URL=https://westroleplay.net
 DEMO_MODE=false
 ```
 
@@ -66,7 +66,7 @@ DEMO_MODE=false
 ### **Step 1: Check Health Endpoint**
 After updating Railway variables, check:
 ```
-https://whitelistweb.up.railway.app/api/health
+https://westroleplay.net/api/health
 ```
 
 **Expected Response:**
@@ -82,7 +82,7 @@ https://whitelistweb.up.railway.app/api/health
 ```
 
 ### **Step 2: Test Form Submission**
-1. Go to: https://whitelistweb.up.railway.app
+1. Go to: https://westroleplay.net
 2. Fill out the whitelist form
 3. Submit the form
 4. Should see success message instead of database error

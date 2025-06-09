@@ -8,7 +8,8 @@
 const https = require('https');
 const http = require('http');
 
-const BASE_URL = 'https://whitelistweb.up.railway.app';
+const BASE_URL = process.env.VERIFY_URL || 'https://westroleplay.net';
+const BACKUP_URL = 'https://whitelistweb.up.railway.app';
 const TIMEOUT = 10000; // 10 seconds
 
 // Colors for console output
@@ -84,7 +85,8 @@ async function testEndpoint(name, url, expectedStatus = 200, options = {}) {
 }
 
 async function runVerification() {
-  log('🚀 Railway Deployment Verification Starting...', 'bold');
+  log('🚀 West Roleplay Domain Verification Starting...', 'bold');
+  log(`🌐 Testing URL: ${BASE_URL}`, 'blue');
   log('=' * 60, 'blue');
 
   const tests = [];
@@ -190,7 +192,8 @@ async function runVerification() {
     log('   💡 Solution: Verify MONGODB_URI in Railway environment variables', 'blue');
   }
 
-  log('\n🌐 Production URL: https://whitelistweb.up.railway.app', 'blue');
+  log(`\n🌐 Production URL: ${BASE_URL}`, 'blue');
+  log('🔄 Railway Backup: https://whitelistweb.up.railway.app', 'blue');
   log('📚 Troubleshooting Guide: See RAILWAY_TROUBLESHOOTING.md', 'blue');
 }
 
