@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Steam Callback Redirect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .error {
+            background: #f44336;
+        }
+        .error:hover {
+            background: #da190b;
+        }
+        pre {
+            background: #333;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Steam Callback Redirect Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Successful Steam Authentication</h2>
+        <p>This will simulate a successful Steam authentication callback with mock user data.</p>
+        <button onclick="testSuccessCallback()">Test Success Callback</button>
+        <button onclick="testSuccessCallbackWithDebug()">Test Success with Debug</button>
+        <button onclick="testSuccessCallbackImmediate()">Test Success (Immediate)</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Error Scenarios</h2>
+        <p>Test different error conditions in the Steam callback.</p>
+        <button class="error" onclick="testErrorCallback()">Test Error Callback</button>
+        <button class="error" onclick="testMissingDataCallback()">Test Missing Data</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Navigation</h2>
+        <p>Test direct navigation to verify React Router is working.</p>
+        <button onclick="testDirectNavigation()">Test Direct Navigation to Home</button>
+        <button onclick="testDirectNavigationToStatus()">Test Navigation to Status</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Mock User Data</h2>
+        <pre id="mockData"></pre>
+    </div>
+
+    <script>
+        // Mock user data for testing
+        const mockUserData = {
+            steamId: '76561198123456789',
+            steamUsername: 'TestUser_TMH',
+            steamAvatar: 'https://avatars.steamstatic.com/test_avatar.jpg',
+            steamProfileUrl: 'https://steamcommunity.com/profiles/76561198123456789/',
+            authToken: 'mock-jwt-token-' + Date.now(),
+            createdAt: new Date().toISOString(),
+            lastLoginAt: new Date().toISOString()
+        };
+        
+        // Display mock data
+        document.getElementById('mockData').textContent = JSON.stringify(mockUserData, null, 2);
+        
+        function testSuccessCallback() {
+            const encodedData = encodeURIComponent(JSON.stringify(mockUserData));
+            const url = `http://localhost:3000/auth/steam/callback?data=${encodedData}`;
+            console.log('Testing success callback:', url);
+            window.location.href = url;
+        }
+        
+        function testSuccessCallbackWithDebug() {
+            const encodedData = encodeURIComponent(JSON.stringify(mockUserData));
+            const url = `http://localhost:3000/auth/steam/callback?data=${encodedData}&debug=true`;
+            console.log('Testing success callback with debug:', url);
+            window.location.href = url;
+        }
+        
+        function testSuccessCallbackImmediate() {
+            const encodedData = encodeURIComponent(JSON.stringify(mockUserData));
+            const url = `http://localhost:3000/auth/steam/callback?data=${encodedData}&immediate=true`;
+            console.log('Testing immediate success callback:', url);
+            window.location.href = url;
+        }
+        
+        function testErrorCallback() {
+            const errorMessage = encodeURIComponent('Test error: Steam authentication failed');
+            const url = `http://localhost:3000/auth/steam/callback?error=${errorMessage}`;
+            console.log('Testing error callback:', url);
+            window.location.href = url;
+        }
+        
+        function testMissingDataCallback() {
+            const url = `http://localhost:3000/auth/steam/callback`;
+            console.log('Testing missing data callback:', url);
+            window.location.href = url;
+        }
+        
+        function testDirectNavigation() {
+            console.log('Testing direct navigation to home');
+            window.location.href = 'http://localhost:3000/';
+        }
+        
+        function testDirectNavigationToStatus() {
+            console.log('Testing direct navigation to status');
+            window.location.href = 'http://localhost:3000/status';
+        }
+        
+        // Set up sessionStorage for redirect testing
+        sessionStorage.setItem('steamAuthRedirect', '/status');
+        console.log('Set steamAuthRedirect to /status for testing');
+    </script>
+</body>
+</html>
